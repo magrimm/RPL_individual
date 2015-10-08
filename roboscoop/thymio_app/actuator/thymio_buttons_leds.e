@@ -20,10 +20,10 @@ feature {NONE} -- Initialization
 
 feature -- Access
 
-	set_leds_brightness (a_leds: separate ARRAY[INTEGER_16])
+	set_leds_brightness (a_leds: separate ARRAY[INTEGER_16])--; b_leds: separate ARRAY[INTEGER_16]; c_leds: separate ARRAY[INTEGER_16])
 			-- Set brightness for buttons' LEDs with the values from `a_leds'.
 		do
-			publisher.publish (create {ASEBA_MSG}.make_from_values (a_leds, 0, 0.0))
+			publisher.publish (create {ASEBA_MSG}.make_from_values (a_leds, 0, 0))
 		end
 
 feature {NONE} -- Implementation
