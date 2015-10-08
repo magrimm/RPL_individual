@@ -73,7 +73,7 @@ feature {NONE} -- Predefined colors
 		end
 
 	make_yellow
-			-- Create blue color.
+			-- Create yellow color.
 		do
 			make_with_values (1.0, 1.0, 0.0, 1.0)
 		end
