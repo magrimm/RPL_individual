@@ -1,7 +1,7 @@
 note
 	description: "Summary description for {PATH_PUBLISHER}."
-	author: ""
-	date: "$Date$"
+	author: "Marius Grimm"
+	date: "29.10.15"
 
 class
 	PATH_PUBLISHER
@@ -64,4 +64,4 @@ feature {NONE} -- Implementation
 	publisher: ROS_PUBLISHER [PATH_MSG]
 			-- Publisher object.
 
-end
+end -- class
