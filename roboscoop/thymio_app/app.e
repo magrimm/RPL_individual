@@ -20,7 +20,7 @@ feature {NONE} -- Initialization
 			robo_node: separate ROBOSCOOP_NODE
 			ros_spinner: separate ROS_SPINNER
 --			robot: separate ROBOT
-			path_planner: separate PATH_PLANNING
+			path_planner: PATH_PLANNING
 
 		do
 			-- Initialize this application as a ROS node.
@@ -39,9 +39,7 @@ feature {NONE} -- Initialization
 --			separate robot as r do
 --				r.start_going_to_goal
 --				end
-			separate path_planner as p_p do
-				p_p.test
-			end
 
+			path_planner.test
 		end
 end
