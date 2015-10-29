@@ -19,7 +19,8 @@ feature {NONE} -- Initialization
 		local
 			robo_node: separate ROBOSCOOP_NODE
 			ros_spinner: separate ROS_SPINNER
-			robot: separate ROBOT
+--			robot: separate ROBOT
+			path_planner: separate PATH_PLANNING
 
 		do
 			-- Initialize this application as a ROS node.
@@ -30,12 +31,17 @@ feature {NONE} -- Initialization
 			create ros_spinner.make
 			start_spinning (ros_spinner)
 
-			-- Create a robot object.
-			create robot.make
+--			-- Create a robot object.
+--			create robot.make
+			create path_planner.make
 
-			-- Launch Thymio in ROBOT		
-			separate robot as r do
-				r.start_going_to_goal
-				end
+--			-- Launch Thymio in ROBOT		
+--			separate robot as r do
+--				r.start_going_to_goal
+--				end
+			separate path_planner as p_p do
+				p_p.test
+			end
+
 		end
 end

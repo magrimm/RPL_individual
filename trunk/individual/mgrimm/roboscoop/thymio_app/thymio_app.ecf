@@ -17,6 +17,8 @@
 			<cluster name="actuator" location=".\actuator\"/>
 			<cluster name="rpl" location="\home\marius\catkin_ws\src\mgrimm\roboscoop\thymio_app\rpl\"/>
 			<cluster name="old_versions" location="\home\marius\catkin_ws\src\mgrimm\roboscoop\thymio_app\old_versions\"/>
+			<cluster name="path_algorithm" location="\home\marius\catkin_ws\src\mgrimm\roboscoop\thymio_app\path_algorithm\"/>
+			<cluster name="path" location="\home\marius\catkin_ws\src\mgrimm\roboscoop\thymio_app\path\"/>
 		</cluster>
 	</target>
 </system>
