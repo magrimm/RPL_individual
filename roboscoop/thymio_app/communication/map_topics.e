@@ -10,5 +10,6 @@ feature
 
 	map: STRING_8 = "/map"
 	path: STRING_8 = "/path"
+	odometry_link: STRING = "/odometry_link"
 
 end
