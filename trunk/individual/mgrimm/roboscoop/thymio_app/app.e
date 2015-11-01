@@ -1,3 +1,4 @@
+
 note
 	description: "Example application of Thymio-II in Roboscoop."
 	author: "Rusakov Andrey"
@@ -19,7 +20,6 @@ feature {NONE} -- Initialization
 		local
 			robo_node: separate ROBOSCOOP_NODE
 			ros_spinner: separate ROS_SPINNER
---			robot: separate ROBOT
 			path_planner: PATH_PLANNING
 
 		do
@@ -31,15 +31,10 @@ feature {NONE} -- Initialization
 			create ros_spinner.make
 			start_spinning (ros_spinner)
 
---			-- Create a robot object.
---			create robot.make
+			-- Create a path_planner object.
 			create path_planner.make
 
---			-- Launch Thymio in ROBOT		
---			separate robot as r do
---				r.start_going_to_goal
---				end
-
-			path_planner.test
+			-- Launch path planning in path_planner.		
+			path_planner.test_2
 		end
 end
