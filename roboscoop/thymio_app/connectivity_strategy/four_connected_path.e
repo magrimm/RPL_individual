@@ -33,15 +33,15 @@ feature
 				end
 				i := i + 1
 			end
-			debug
-				io.put_string ("g.count_x: " + g.count_x.out
-								+ "g.nodes.at (100): "
-								 + "%N")
+--			debug
+--				io.put_string ("g.count_x: " + g.count_x.out
+--								+ "g.nodes.at (100): "
+--								 + "%N")
 
-				across g.nodes as ic loop
-					io.put_string ("item.pos: " + ic.item.position.out + "%N")
-					io.put_string ("item.nei: " + ic.item.neighbours.out + "%N")
-				end
-			end
+--				across g.nodes as ic loop
+--					io.put_string ("item.pos: " + ic.item.position.out + "%N")
+--					io.put_string ("item.nei: " + ic.item.neighbours.out + "%N")
+--				end
+--			end
 		end
 end -- class

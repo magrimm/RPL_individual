@@ -40,12 +40,12 @@ feature -- access
 			grid_to_graph: GRID_TO_GRAPH
 
 		do
-			create a_star
+			create a_star.make
 			create grid_to_graph
 			create point_1.make_with_values (3, 3, 0)
 			create point_2.make_with_values (50, 50, 0)
 			grid_to_graph.grid_to_graph (occupancy_grid_sig)
---			path_planner.set_path_with_path_msg (a_star.a_star_algorithm (point_1, point_2))
+			path_planner.set_path_with_path_msg (a_star.a_star_algorithm (point_1, point_2))
 		end
 
 feature {NONE} -- Implementation
