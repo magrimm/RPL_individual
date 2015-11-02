@@ -21,7 +21,7 @@ feature {NONE}
 feature -- access
 
 	set_path_with_point_msg (a_val_1, a_val_2: POINT_MSG)
-			-- Publishing speed.
+			-- Publishing.
 		local
 			a_header: HEADER_MSG
 
@@ -60,6 +60,48 @@ feature -- access
 
 	set_path_with_path_msg (path: PATH_MSG)
 		do
+			publisher.publish (path)
+		end
+
+	set_path_with_spatial_graph_nodes (sgn: ARRAYED_LIST[SPATIAL_GRAPH_NODE])
+		-- publish path from spatial_graph_nodes
+		local
+			i: INTEGER
+			a_header: HEADER_MSG
+
+			a_orientation: QUATERNION_MSG
+			a_position: POINT_MSG
+			a_pose: POSE_MSG
+			a_default_value: POSE_STAMPED_MSG
+
+			a_poses: ARRAY [POSE_STAMPED_MSG]
+			path: PATH_MSG
+
+		do
+			-- Header
+			create a_header.make_now ("map")
+			-- Empty array of POSE_STAMPED_MSG
+			create a_poses.make_empty
+
+			from
+				i := 1
+			until
+				i > sgn.count
+			loop
+				-- Create point
+				create a_orientation.make_with_values (0, 0, 0, 0)
+				create a_position.make_with_values (sgn.at (i).position.x, sgn.at (i).position.y, sgn.at (i).position.z)
+				create a_pose.make_with_values (a_position, a_orientation)
+				create a_default_value.make_with_values (a_header, a_pose)
+
+				-- Save points in array
+				a_poses.force (a_default_value, i)
+
+				i := i + 1
+			end
+
+			-- Publish path from saved points in array a_poses
+			create path.make_with_values (a_header, a_poses)
 			publisher.publish (path)
 		end
 
