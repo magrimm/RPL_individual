@@ -16,7 +16,7 @@ feature
 		local
 			grid_graph: GRID_GRAPH
 			min_x, min_y, max_x, max_y: REAL_64
-			conn_strategy: FOUR_CONNECTED_PATH
+			conn_strategy: FOUR_CONNECTED_PATH --EIGHT_CONNECTED_PATH
 			i, j: INTEGER
 			n_start, n_goal: SPATIAL_GRAPH_NODE
 
@@ -71,7 +71,7 @@ feature
 
 			-- Input x,y,z coord and gt out POINT_MSG
 			create start_node.make_with_values (0.2, 0.2, 0)
-			create goal_node.make_with_values (0.3, 0.2, 0)
+			create goal_node.make_with_values (1.3, 0.2, 0)
 
 			-- Input POINT_MSG and get out SPATIAL_GRAPH_NODE
 			create start_n.make_with_coords (create {POINT_MSG}.make_with_values (0, 0, 0))

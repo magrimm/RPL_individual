@@ -2,7 +2,7 @@
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-14-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-14-0 http://www.eiffel.com/developers/xml/configuration-1-14-0.xsd" name="thymio_app" uuid="DC112819-D718-4560-AB6B-434253B6A0FA">
 	<target name="thymio_app">
 		<root class="APP" feature="make"/>
-		<option debug="true">
+		<option debug="false">
 			<debug name="__unnamed_debug__" enabled="true"/>
 		</option>
 		<setting name="concurrency" value="scoop"/>
