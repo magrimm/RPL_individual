@@ -1,8 +1,8 @@
 
 note
-	description: "Example application of Thymio-II in Roboscoop."
-	author: "Rusakov Andrey"
-	date: "10.09.2014"
+	description: "Application in Roboscoop."
+	author: "Marius Grimm"
+	date: "28.10.15"
 
 class
 	APP

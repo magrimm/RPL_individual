@@ -20,7 +20,7 @@ feature {NONE}
 
 feature -- access
 
-	set_path_with_point_msg (a_val_1, a_val_2: POINT_MSG)
+	set_path_with_point_msg (a_val_1, a_val_2: POINT_MSG; header_topic: STRING)
 			-- Publish path from two POINT_MSG
 		local
 			a_header: HEADER_MSG
@@ -35,16 +35,16 @@ feature -- access
 
 		do
 			-- Header
-			a_header := create {HEADER_MSG}.make_now ("map")
+			a_header := create {HEADER_MSG}.make_now (header_topic)
 
 			-- First point
-			a_orientation1 := create {QUATERNION_MSG}.make_with_values (0, 0, 0, 0)
+			a_orientation1 := create {QUATERNION_MSG}.make_empty
 			a_position1 := create {POINT_MSG}.make_with_values (a_val_1.x, a_val_1.y, a_val_1.z)
 			a_pose1 := create {POSE_MSG}.make_with_values (a_position1, a_orientation1)
 			a_default_value1 := create {POSE_STAMPED_MSG}.make_with_values (a_header, a_pose1)
 
 			-- Second point
-			a_orientation2 := create {QUATERNION_MSG}.make_with_values (0, 0, 0, 0)
+			a_orientation2 := create {QUATERNION_MSG}.make_empty
 			a_position2 := create {POINT_MSG}.make_with_values (a_val_2.x, a_val_2.y, a_val_2.z)
 			a_pose2 := create {POSE_MSG}.make_with_values (a_position2, a_orientation2)
 			a_default_value2 := create {POSE_STAMPED_MSG}.make_with_values (a_header, a_pose2)
@@ -64,7 +64,7 @@ feature -- access
 			publisher.publish (path)
 		end
 
-	set_path_with_spatial_graph_nodes (sgn: ARRAYED_LIST[SPATIAL_GRAPH_NODE])
+	set_path_with_spatial_graph_nodes (sgn: ARRAYED_LIST[SPATIAL_GRAPH_NODE]; header_topic: STRING)
 		-- Publish path from spatial_graph_nodes
 		local
 			i: INTEGER
@@ -80,7 +80,7 @@ feature -- access
 
 		do
 			-- Header
-			create a_header.make_now ("map")
+			create a_header.make_now (header_topic)
 			-- Empty array of POSE_STAMPED_MSG
 			create a_poses.make_empty
 
@@ -90,7 +90,7 @@ feature -- access
 				i > sgn.count
 			loop
 				-- Create point
-				create a_orientation.make_with_values (0, 0, 0, 0)
+				create a_orientation.make_empty
 				create a_position.make_with_values (sgn.at (i).position.x, sgn.at (i).position.y, sgn.at (i).position.z)
 				create a_pose.make_with_values (a_position, a_orientation)
 				create a_default_value.make_with_values (a_header, a_pose)
