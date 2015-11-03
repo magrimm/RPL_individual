@@ -1,4 +1,4 @@
-note
+﻿note
 	description: "Connectivity strategy with four-connected-path."
 	author: "Marius Grimm"
 	date: "30.10.15"
@@ -12,8 +12,10 @@ inherit
 feature
 
 	connect (g: separate GRID_GRAPH)
+		-- connect each node in a 3D graph with
+		-- its six perpendicular direct neighbours.
 		local
-			i, j: INTEGER
+			i, j, k: INTEGER
 		do
 			from
 				i := 1
@@ -25,11 +27,25 @@ feature
 				until
 					j > g.count_y
 				loop
-					connect_node (g, i, j, 1, i+1, j, 1)
-					connect_node (g, i, j, 1, i, j+1, 1)
-					connect_node (g, i, j, 1, i-1, j, 1)
-					connect_node (g, i, j, 1, i, j-1, 1)
+					from
+						k := 1
+					until
+						k > g.count_z
+					loop
+						-- four neighbours at k
+						connect_node (g, i, j, k, i+1, j, ḱ)
+						connect_node (g, i, j, k, i, j+1, k)
+						connect_node (g, i, j, k, i-1, j, k)
+						connect_node (g, i, j, k, i, j-1, k)
 
+						-- one neighbour at k+1
+						connect_node (g, i, j, k, i, j, k+1)
+
+						-- one neighbour at k-1
+						connect_node (g, i, j, k, i, j, k-1)
+
+						k := k + 1
+					end
 					j := j + 1
 				end
 				i := i + 1
