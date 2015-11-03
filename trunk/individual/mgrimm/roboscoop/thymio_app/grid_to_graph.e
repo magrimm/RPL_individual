@@ -8,7 +8,7 @@ class
 
 feature
 
-	grid_to_graph (occ_grid_sig: separate OCCUPANCY_GRID_SIGNALER)
+	grid_to_graph (occ_grid_sig: separate OCCUPANCY_GRID_SIGNALER): ARRAYED_LIST[SPATIAL_GRAPH_NODE]
 		-- convert grid to graph
 		require
 			-- make sure that map is received
@@ -25,7 +25,7 @@ feature
 			start_n, goal_n: SPATIAL_GRAPH_NODE
 			start_node_ind_x, start_node_ind_y, goal_node_ind_x, goal_node_ind_y: INTEGER
 			resolution: REAL_64
-			path: PATH_MSG
+--			path: PATH_MSG
 
 		do
 			create conn_strategy
@@ -71,7 +71,7 @@ feature
 
 			-- Input x,y,z coord and gt out POINT_MSG
 			create start_node.make_with_values (0.2, 0.2, 0)
-			create goal_node.make_with_values (0.22, 0.2, 0)
+			create goal_node.make_with_values (0.25, 0.2, 0)
 
 			-- Input POINT_MSG and get out SPATIAL_GRAPH_NODE
 			create start_n.make_with_coords (create {POINT_MSG}.make_with_values (0, 0, 0))
@@ -88,7 +88,7 @@ feature
 			start_n := grid_graph.node_at (start_node_ind_x, start_node_ind_y, 1)
 			goal_n := grid_graph.node_at (goal_node_ind_x, goal_node_ind_y, 1)
 
---			path := a_star.a_star_algorithm (start_n, goal_n)
+			Result := a_star.a_star_algorithm (start_n, goal_n)
 		end
 
 end -- class

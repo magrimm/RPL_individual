@@ -55,6 +55,7 @@ feature -- access
 			-- Path cost from starting node a to node b
 		do
 			Result := tm.euclidean_distance (a.position, b.position) + traversal_cost (b, c)
+--			Result :=  + traversal_cost (b, c)
 		end
 
 	traversal_cost (b, c: separate SPATIAL_GRAPH_NODE): REAL_64
