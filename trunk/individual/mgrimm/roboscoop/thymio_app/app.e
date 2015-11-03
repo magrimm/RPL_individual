@@ -31,10 +31,26 @@ feature {NONE} -- Initialization
 			create ros_spinner.make
 			start_spinning (ros_spinner)
 
+			-- Parse parameter text file
+			create parser
+			params_path := Arguments.argument (1).to_string_8
+			params := parser.read_parameters (create {STRING}.make_from_separate (params_path))
+
 			-- Create a path_planner object.
-			create path_planner.make
+			create path_planner.make (params)
 
 			-- Launch path planning in path_planner.		
 			path_planner.plan_path
 		end
-end
+
+feature {NONE}
+
+	parser: PATH_PLANNING_PARSER
+			-- Parser class for paramteters from text file.
+
+	params: PATH_PLANNING_PARAMETERS
+			-- All Parameters needed.
+
+	params_path: separate STRING
+
+end -- class APP

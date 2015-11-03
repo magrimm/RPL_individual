@@ -32,16 +32,16 @@ feature
 					until
 						k > g.count_z
 					loop
-						-- four neighbours at k
-						connect_node (g, i, j, k, i+1, j, ḱ)
+						-- Four neighbours at k
+						connect_node (g, i, j, k, i+1, j, k)
 						connect_node (g, i, j, k, i, j+1, k)
 						connect_node (g, i, j, k, i-1, j, k)
 						connect_node (g, i, j, k, i, j-1, k)
 
-						-- one neighbour at k+1
+						-- One neighbour at k+1
 						connect_node (g, i, j, k, i, j, k+1)
 
-						-- one neighbour at k-1
+						-- One neighbour at k-1
 						connect_node (g, i, j, k, i, j, k-1)
 
 						k := k + 1

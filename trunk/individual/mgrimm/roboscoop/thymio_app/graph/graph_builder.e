@@ -6,6 +6,21 @@ note
 class
 	GRAPH_BUILDER
 
+create
+	make_with_attributes
+
+feature {NONE} -- Initialization
+
+	make_with_attributes (par: PATH_PLANNING_PARAMETERS)
+		-- create current with given attributes
+		do
+			params := par
+		end
+
+feature {NONE}
+
+	params: PATH_PLANNING_PARAMETERS
+
 feature -- Access
 
 	grid_to_graph (occ_grid_sig: separate OCCUPANCY_GRID_SIGNALER): ARRAYED_LIST[SPATIAL_GRAPH_NODE]
@@ -14,8 +29,8 @@ feature -- Access
 			-- Make sure that map is received
 			occ_grid_sig.state.data.count > 0
 		local
---			conn_strategy: FOUR_CONNECTED_PATH		                                             --------------------------------------- TODO PARAM
-			conn_strategy: EIGHT_CONNECTED_PATH
+			conn_strategy: GRID_CONNECTIVITY_STRATEGY
+
 			grid_graph: GRID_GRAPH
 			a_star: SEARCH_ALGORITHM
 
@@ -26,8 +41,16 @@ feature -- Access
 			n_start, n_goal: SPATIAL_GRAPH_NODE
 
 		do
-			create conn_strategy
 			create a_star.make
+			if params.connected_path_strategy = 4 then
+				conn_strategy := create {FOUR_CONNECTED_PATH}
+			elseif params.connected_path_strategy = 8 then
+				conn_strategy := create {EIGHT_CONNECTED_PATH}
+			else
+				-- default FOUR_CONNECTED_PATH
+				conn_strategy := create {FOUR_CONNECTED_PATH}
+				io.put_string ("ERROR: UNKNOWN CONNECTIVITY STRATEGY!%N")
+			end
 
 			-- Calculate map in meters
 			min_x := occ_grid_sig.state.info.origin.position.x
@@ -44,7 +67,7 @@ feature -- Access
 										conn_strategy)
 
 			-- Inflate obstacles to assume point mass
-			occ_grid_sig.inflate (0.00)                                                           -------------------------------------- TODO PARAM
+			occ_grid_sig.inflate (params.val_inflate)
 
 			-- Remove connections at obstacles
 			from
@@ -66,8 +89,8 @@ feature -- Access
 			end
 
 			-- Input x,y,z coord and get out POINT_MSG
-			create start_node.make_with_values (0.2, 0.2, 0)                                        -------------------------------------- TODO PARAM
-			create goal_node.make_with_values (0.5, 0.5, 0)                                         -------------------------------------- TODO PARAM
+			create start_node.make_with_values (params.start_x, params.start_y, params.start_z)
+			create goal_node.make_with_values (params.goal_x, params.goal_y, params.goal_z)
 
 			-- Input POINT_MSG and get out SPATIAL_GRAPH_NODE
 			create n_start.make_with_coords (create {POINT_MSG}.make_empty)

@@ -25,6 +25,8 @@
 			<cluster name="connectivity_strategy" location="\home\marius\catkin_ws\src\mgrimm\roboscoop\thymio_app\connectivity_strategy\"/>
 			<cluster name="graph" location="\home\marius\catkin_ws\src\mgrimm\roboscoop\thymio_app\graph\"/>
 			<cluster name="util" location="\home\marius\catkin_ws\src\mgrimm\roboscoop\thymio_app\util\"/>
+			<cluster name="parameters" location="\home\marius\catkin_ws\src\mgrimm\roboscoop\thymio_app\parameters\"/>
+			<cluster name="parser" location="\home\marius\catkin_ws\src\mgrimm\roboscoop\thymio_app\parser\"/>
 		</cluster>
 	</target>
 </system>
