@@ -26,28 +26,6 @@ in the path_planning_parameters.txt file.
 III. File/directory structure
 -------------------------------
 
-Class Hierachy
-
-   |---------|           |----------|	       |----------|
-   |   APP   |---------->|   ROBOT  |--------->|  PLANNER |
-   |---------|           |----------|	       |----------|	      
-						     |
-						     |
-						     | 
-						     \/
-                                             |--------------|
-                                             |  CONTROLLER  |
-                                             |--------------|
-                     			        ^        ^ 
-					       /          \                             
-                  			      /            \                            
-                                             /              \
-                  			    /                \  										
-      			    |----------------------|       |------------|
-          	            |  FEATURE_CONTROLLER  |       |   ERROR    |
-             	            |----------------------|       |------------|
-
-
 In the /<your-nethz-name>/roboscoop/thymio_app directory:
 * app.e 		- main file of the project 
 
