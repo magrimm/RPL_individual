@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {PATH_PLANNING}."
+	description: "Planner."
 	author: "Marius Grimm"
 	date: "29.10.15"
 
@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 			create path_planner.make_with_topic ({MAP_TOPICS}.path)
 		end
 
-feature -- access
+feature -- Access
 
 	test
 		local
@@ -46,20 +46,20 @@ feature -- access
 			path_planner.set_path_with_spatial_graph_nodes (a_sgn)
 		end
 
-	test_2
+	plan_path
 		local
-			point_1, point_2: POINT_MSG
-			a_star: A_STAR
+--			n_start, n_goal: POINT_MSG
 			grid_to_graph: GRID_TO_GRAPH
 
 		do
-			create a_star.make
 			create grid_to_graph
-			create point_1.make_with_values (20, 20, 0)
-			create point_2.make_with_values (20, 180, 0)
---			grid_to_graph.grid_to_graph (occupancy_grid_sig)
+
+--			-- create start and goal node with coordinates
+--			create n_start.make_with_values (20, 20, 0)
+--			create n_goal.make_with_values (20, 180, 0)
+
+			-- publish path
 			path_planner.set_path_with_spatial_graph_nodes (grid_to_graph.grid_to_graph (occupancy_grid_sig))
---			path_planner.set_path_with_path_msg (a_star.a_star_algorithm (point_1, point_2))
 		end
 
 feature {NONE} -- Implementation

@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {PATH_PUBLISHER}."
+	description: "Publisher class for publishing PATH_MSG."
 	author: "Marius Grimm"
 	date: "29.10.15"
 
@@ -21,7 +21,7 @@ feature {NONE}
 feature -- access
 
 	set_path_with_point_msg (a_val_1, a_val_2: POINT_MSG)
-			-- Publishing.
+			-- Publish path from two POINT_MSG
 		local
 			a_header: HEADER_MSG
 
@@ -59,12 +59,13 @@ feature -- access
 		end
 
 	set_path_with_path_msg (path: PATH_MSG)
+		-- Publish path from PATH_MSG
 		do
 			publisher.publish (path)
 		end
 
 	set_path_with_spatial_graph_nodes (sgn: ARRAYED_LIST[SPATIAL_GRAPH_NODE])
-		-- publish path from spatial_graph_nodes
+		-- Publish path from spatial_graph_nodes
 		local
 			i: INTEGER
 			a_header: HEADER_MSG

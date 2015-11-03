@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {MAP_TOPICS}."
+	description: "List of used ROS topics for path planning."
 	author: "Marius Grimm"
 	date: "29.10.15"
 
@@ -8,8 +8,8 @@ class
 
 feature
 
+	-- Used topics.
 	map: STRING_8 = "/map"
 	path: STRING_8 = "/path"
-	odometry_link: STRING = "/odometry_link"
 
-end
+end -- class MAP_TOPICS

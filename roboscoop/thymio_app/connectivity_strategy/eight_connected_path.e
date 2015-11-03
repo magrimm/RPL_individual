@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {EIGHT_CONNECTED_PATH}."
+	description: "Connectivity strategy with eight-connected-path."
 	author: "Marius Grimm"
 	date: "30.10.15"
 
@@ -34,6 +34,7 @@ feature
 					connect_node (g, i, j, 1, i+1, j-1, 1)
 					connect_node (g, i, j, 1, i-1, j+1, 1)
 					connect_node (g, i, j, 1, i-1, j-1, 1)
+
 					j := j + 1
 				end
 				i := i + 1
