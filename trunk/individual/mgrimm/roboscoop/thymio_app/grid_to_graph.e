@@ -71,7 +71,7 @@ feature
 
 			-- Input x,y,z coord and gt out POINT_MSG
 			create start_node.make_with_values (0.2, 0.2, 0)
-			create goal_node.make_with_values (0.25, 0.2, 0)
+			create goal_node.make_with_values (0.3, 0.2, 0)
 
 			-- Input POINT_MSG and get out SPATIAL_GRAPH_NODE
 			create start_n.make_with_coords (create {POINT_MSG}.make_with_values (0, 0, 0))

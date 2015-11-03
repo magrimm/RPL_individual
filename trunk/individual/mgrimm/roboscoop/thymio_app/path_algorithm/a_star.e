@@ -172,54 +172,59 @@ feature
 					until
 						j > n_next.neighbours.count
 					loop
-						if not S_open.has (n_next.neighbours.at (j)) then
-							g_cost.extend (g_cost.at (S_open.index_of (n_next, 1)) + cost.cost (n_next.neighbours.at (j), n_next))
-							f_cost.extend (g_cost.last + cost.cost (n_next.neighbours.at (j), n_goal))
+						debug
+							io.put_string ("HELP_" + j.out + "%N")
+						end
+						if not S_closed.has (n_next.neighbours.at (j)) then
+							if not S_open.has (n_next.neighbours.at (j)) then
+								g_cost.extend (g_cost.at (S_open.index_of (n_next, 1)) + cost.cost (n_next.neighbours.at (j), n_next))
+								f_cost.extend (g_cost.last + cost.cost (n_next.neighbours.at (j), n_goal))
 
-							S_open.extend (n_next.neighbours.at (j))
---							Parents_open.extend (n_next.neighbours.at (j))
-							Parents_open.extend (n_next)
-							n_prev_neigh := n_next
-
---							tot_expected_cost_list.extend (cost.tot_expected_cost (n_start, n_next, n_next.neighbours.at (j), n_goal))
-							debug
-								io.put_string ("POS_6_" + j.out + " | "
-												+ "g_cost.count: " + g_cost.count.out
-												+ "%N")
-							end
-
-						else
-							g_cost_temp := g_cost.at (S_open.index_of (n_next, 1)) + cost.cost (n_next.neighbours.at (j), n_next)
-
-							debug
-								io.put_string ("POS_7 | "
---												+ "cost_neigh: " + cost.tot_expected_cost (n_start, n_next, n_next.neighbours.at (j), n_goal).out + " | "
---												+ "cost_prev_neigh: " + tot_expected_cost_list.at (j).out + " | "
-												+ "cost_neigh: " + g_cost_temp.out + " | "
-												+ "cost_prev_neigh: " + g_cost.at (S_open.index_of (n_next.neighbours.at (j), 1)).out + " | "
-												+ "j: " + j.out
-												+ "%N")
-							end
-							if g_cost_temp < g_cost.at (S_open.index_of (n_next.neighbours.at (j), 1)) then
---							if cost.tot_expected_cost (n_start, n_next, n_next.neighbours.at (j), n_goal) < tot_expected_cost_list.at (j) then
-								g_cost.put_i_th (g_cost_temp, S_open.index_of (n_next.neighbours.at (j), 1))
-								f_cost.put_i_th (g_cost.at (S_open.index_of (n_next.neighbours.at (j), 1)) + cost.cost (n_next.neighbours.at (j), n_goal),
-																S_open.index_of (n_next.neighbours.at (j),1))
-
-								------------------------------------------------------------------------------
---								tot_expected_cost_list.start
---								Parents_open.start
-								--------------------------------------------------------------------------							
---								tot_expected_cost_list.go_i_th (j)
---								Parents_open.go_i_th (j)
-								----------------------------------------------------------------------------------
---								tot_expected_cost_list.replace (cost.tot_expected_cost (n_start, n_next, n_next.neighbours.at (j), n_goal))
-								Parents_open.put_i_th (n_next, S_open.index_of (n_next.neighbours.at (j),1))
+								S_open.extend (n_next.neighbours.at (j))
+	--							Parents_open.extend (n_next.neighbours.at (j))
+								Parents_open.extend (n_next)
 								n_prev_neigh := n_next
---								Parents_open.replace (n_prev_neigh)
-								---------------------------------------------------------------------------------
+
+	--							tot_expected_cost_list.extend (cost.tot_expected_cost (n_start, n_next, n_next.neighbours.at (j), n_goal))
 								debug
-									io.put_string ("POS_8_" + j.out + "%N")
+									io.put_string ("POS_6_" + j.out + " | "
+													+ "g_cost.count: " + g_cost.count.out
+													+ "%N")
+								end
+
+							else
+								g_cost_temp := g_cost.at (S_open.index_of (n_next, 1)) + cost.cost (n_next.neighbours.at (j), n_next)
+
+								debug
+									io.put_string ("POS_7 | "
+	--												+ "cost_neigh: " + cost.tot_expected_cost (n_start, n_next, n_next.neighbours.at (j), n_goal).out + " | "
+	--												+ "cost_prev_neigh: " + tot_expected_cost_list.at (j).out + " | "
+													+ "cost_neigh: " + g_cost_temp.out + " | "
+													+ "cost_prev_neigh: " + g_cost.at (S_open.index_of (n_next.neighbours.at (j), 1)).out + " | "
+													+ "j: " + j.out
+													+ "%N")
+								end
+								if g_cost_temp < g_cost.at (S_open.index_of (n_next.neighbours.at (j), 1)) then
+	--							if cost.tot_expected_cost (n_start, n_next, n_next.neighbours.at (j), n_goal) < tot_expected_cost_list.at (j) then
+									g_cost.put_i_th (g_cost_temp, S_open.index_of (n_next.neighbours.at (j), 1))
+									f_cost.put_i_th (g_cost.at (S_open.index_of (n_next.neighbours.at (j), 1)) + cost.cost (n_next.neighbours.at (j), n_goal),
+																	S_open.index_of (n_next.neighbours.at (j),1))
+
+									------------------------------------------------------------------------------
+	--								tot_expected_cost_list.start
+	--								Parents_open.start
+									--------------------------------------------------------------------------							
+	--								tot_expected_cost_list.go_i_th (j)
+	--								Parents_open.go_i_th (j)
+									----------------------------------------------------------------------------------
+	--								tot_expected_cost_list.replace (cost.tot_expected_cost (n_start, n_next, n_next.neighbours.at (j), n_goal))
+									Parents_open.put_i_th (n_next, S_open.index_of (n_next.neighbours.at (j),1))
+									n_prev_neigh := n_next
+	--								Parents_open.replace (n_prev_neigh)
+									---------------------------------------------------------------------------------
+									debug
+										io.put_string ("POS_8_" + j.out + "%N")
+									end
 								end
 							end
 						end
