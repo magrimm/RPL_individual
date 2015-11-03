@@ -35,6 +35,6 @@ feature {NONE} -- Initialization
 			create path_planner.make
 
 			-- Launch path planning in path_planner.		
-			path_planner.test
+			path_planner.test_2
 		end
 end

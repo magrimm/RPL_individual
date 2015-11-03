@@ -57,7 +57,8 @@ feature -- access
 			create grid_to_graph
 			create point_1.make_with_values (20, 20, 0)
 			create point_2.make_with_values (20, 180, 0)
-			grid_to_graph.grid_to_graph (occupancy_grid_sig)
+--			grid_to_graph.grid_to_graph (occupancy_grid_sig)
+			path_planner.set_path_with_spatial_graph_nodes (grid_to_graph.grid_to_graph (occupancy_grid_sig))
 --			path_planner.set_path_with_path_msg (a_star.a_star_algorithm (point_1, point_2))
 		end
 
