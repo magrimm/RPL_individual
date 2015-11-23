@@ -1,0 +1,13 @@
+frame_id: camera_link                                                # frame_id of the visualization marker for displaying in rviz
+ns: my_namesspace                                                    # namespace of the marker
+mesh_resource: package://pr2_description/meshes/base_v0/base.dae     # only if using a MESH_RESOURCE marker type
+
+orientation_x: 0.0                                                   # marker quarternion component in x-direction
+orientation_y: 0.0                                                   # marker quarternion component in y-direction
+orientation_z: 0.0                                                   # marker quarternion component in z-direction
+orientation_w: 1.0                                                   # marker quarternion component in w-direction
+
+color_alpha: 0.5                                                     # transparancy of the marker
+color_r: 0.0                                                         # red part of the marker
+color_g: 1.0                                                         # green part of the marker
+color_b: 0.0                                                         # blue part of the marker
