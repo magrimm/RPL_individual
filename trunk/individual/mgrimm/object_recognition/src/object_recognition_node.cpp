@@ -189,7 +189,7 @@ void spin_image (pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud, pcl::PointCloud<pc
 	normal_estimation.setSearchMethod (kdtree);
 
 	pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud< pcl::Normal>);
-	normal_estimation.setRadiusSearch (0.03);
+	normal_estimation.setRadiusSearch (0.10);
 	normal_estimation.compute (*normals);
 
 	// Setup spin image computation
@@ -206,86 +206,50 @@ void spin_image (pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud, pcl::PointCloud<pc
 	std::cout << "SI output points.size (): " << spin_images->points.size () << std::endl;
 }
 
-float correlation_spin_images (pcl::PointCloud<pcl::Histogram<153> >::Ptr a_spin_images1, pcl::PointCloud<pcl::Histogram<153> > &a_spin_images2)
+float correlation_image (pcl::Histogram<153> P, pcl::Histogram <153> Q)
+{
+	int hist_size = 153;
+	float sum_P = std::accumulate(P.histogram, P.histogram + hist_size, 0.0);
+	float sum_Q = std::accumulate(Q.histogram, Q.histogram + hist_size, 0.0);
+	float sum_PQ = std::inner_product(P.histogram, P.histogram + hist_size, Q.histogram, 0.0);
+	float sum_sqr_P = std::inner_product(P.histogram, P.histogram + hist_size, P.histogram, 0.0);
+	float sum_sqr_Q = std::inner_product(Q.histogram, Q.histogram + hist_size, Q.histogram, 0.0);
+
+	float R = ((hist_size*sum_PQ)-(sum_P*sum_Q))/std::sqrt(((hist_size*sum_sqr_P)-std::pow(sum_P, 2))*
+														((hist_size*sum_sqr_Q)-std::pow(sum_Q, 2)));
+
+	return R;
+}
+
+float correlation_cloud (pcl::PointCloud<pcl::Histogram<153> > &a_spin_images1, pcl::PointCloud<pcl::Histogram<153> >::Ptr a_spin_images2)
 {
 	std::vector<float> R_vector;
-	int histo_size = 153;
-	for (int i=0; i<a_spin_images1->points.size(); ++i)
+	int histo_size = 153, count_corr;
+	for (int i=0; i<a_spin_images1.points.size(); ++i)
 	{
 		float R=-std::numeric_limits<float>::infinity();
-		for (int j=0; j<a_spin_images2.points.size(); ++j)
+		for (int j=0; j<a_spin_images2->points.size(); ++j)
 		{
-			float R_temp, R_temp_num, R_temp_denom;
-			R_temp_num=((histo_size*std::inner_product(a_spin_images1->points[i].histogram,
-												a_spin_images1->points[i].histogram
-													+ sizeof(a_spin_images1->points[i].histogram) / sizeof(a_spin_images1->points[i].histogram[0]),
-												a_spin_images2.points[j].histogram,
-												0.0))
-					-(std::accumulate(a_spin_images1->points[i].histogram,
-										a_spin_images1->points[i].histogram
-											+ sizeof(a_spin_images1->points[i].histogram) / sizeof(a_spin_images1->points[i].histogram[0]),
-										0.0)
-						*std::accumulate(a_spin_images2.points[i].histogram,
-											a_spin_images2.points[i].histogram
-												+ sizeof(a_spin_images2.points[i].histogram) / sizeof(a_spin_images2.points[i].histogram[0]),
-											0.0)));
-
-			R_temp_denom=(std::sqrt(((histo_size*std::inner_product(a_spin_images1->points[i].histogram,
-														a_spin_images1->points[i].histogram
-															+ sizeof(a_spin_images1->points[i].histogram) / sizeof(a_spin_images1->points[i].histogram[0]),
-														a_spin_images1->points[i].histogram,
-														0.0))
-						-(std::pow(std::accumulate(a_spin_images1->points[i].histogram,
-													a_spin_images1->points[i].histogram
-														+ sizeof(a_spin_images1->points[i].histogram) / sizeof(a_spin_images1->points[i].histogram[0]),
-													0.0)
-									,2)))
-					*((histo_size*std::inner_product(a_spin_images2.points[i].histogram,
-														a_spin_images2.points[i].histogram
-															+ sizeof(a_spin_images2.points[i].histogram) / sizeof(a_spin_images2.points[i].histogram[0]),
-														a_spin_images2.points[i].histogram,
-														0.0))
-						-(std::pow(std::accumulate(a_spin_images2.points[i].histogram,
-													a_spin_images2.points[i].histogram
-														+ sizeof(a_spin_images2.points[i].histogram) / sizeof(a_spin_images2.points[i].histogram[0]),
-													0.0)
-									,2)))));
-
+			float R_temp;
 			// Calculate correlation value R between two points in different pointclouds
-			R_temp = R_temp_num/R_temp_denom;
+			R_temp = correlation_image(a_spin_images1.points[i], a_spin_images2->points[j]);
 
 			if (R_temp > R)
 			{
 				R = R_temp;
 			}
-			std::cout << "R_temp: " << R_temp << " | R: " << R << "\n";
-
-			std::cout << "Num: " << R_temp_num
-					  << " Denom: " << R_temp_denom
-					  << " Inner_product_12: "
-					  << std::inner_product(a_spin_images1->points[i].histogram,
-								a_spin_images1->points[i].histogram
-								+ sizeof(a_spin_images1->points[i].histogram) / sizeof(a_spin_images1->points[i].histogram[0]),
-								a_spin_images2.points[j].histogram,
-								0.0)
-			          << " sum_pow2_1: "
-			          << std::inner_product(a_spin_images1->points[i].histogram,
-								a_spin_images1->points[i].histogram
-									+ sizeof(a_spin_images1->points[i].histogram) / sizeof(a_spin_images1->points[i].histogram[0]),
-								a_spin_images1->points[i].histogram,
-								0.0)
-				      << " sum_pow2_2: "
-					  << std::inner_product(a_spin_images2.points[i].histogram,
-								a_spin_images2.points[i].histogram
-									+ sizeof(a_spin_images2.points[i].histogram) / sizeof(a_spin_images2.points[i].histogram[0]),
-								a_spin_images2.points[i].histogram,
-								0.0)
-					  << std::endl;
+			if (R > 0.93)
+			{
+				count_corr += count_corr;
+			}
 		}
 		R_vector.push_back(R);
 	}
-	float sum = std::accumulate(R_vector.begin(), R_vector.end(), 0.0);
-	return (sum / R_vector.size());
+	// Calculate the mean of the R values for the point cloud s
+	float sum_R = std::accumulate(R_vector.begin(), R_vector.end(), 0.0);
+	float R_tot = (sum_R / R_vector.size());
+
+	return R_tot;
 }
 
 void features_of_objects ()
@@ -323,33 +287,14 @@ void features_of_objects ()
 		    		  << line_object_pcdfiles
 					  << "\n";
 			}
-			// Uniformly sampling the pointclouds
-//			uniform_sampling(cloud, cloud_sampled);
+
 			// Downsample resolution
-			resolution_filter(cloud, cloud_sampled, 0.01, 0.01, 0.01);
+//			resolution_filter(cloud, cloud_sampled, 0.01, 0.01, 0.01);
 			// Convert Pointcloud to spin_image
-			spin_image(cloud_sampled, spin_images);
+			spin_image(cloud, spin_images);
 			// Push back Pointclouds/spin_images in vector a_vector/a_vector_spin_images
-			a_vector.push_back (*cloud_sampled);
+			a_vector.push_back (*cloud);
 			a_vector_spin_images.push_back (*spin_images);
-			
-			/*
-			// Print info about Pointcloud of .pcd and size of the object_database
-			std::cout << "\na_vector_element: "
-					  << a_vector.at(a_vector.size()-1)
-					  << "Size a_array: "
-			 	 	  << object_database.size() + 1
-					  << " "
-					  << a_vector.size()
-					  << "";//"\n\n";
-			std::cout << "\na_vector_element_spin_images: "
-					  << a_vector_spin_images.at(a_vector_spin_images.size()-1)
-					  << "Size a_array_spin_images: "
-			 	 	  << object_database_spin_images.size() + 1
-					  << " "
-					  << a_vector_spin_images.size()
-					  << "\n\n";
-			*/
 		}
 		// Push back vector with pointclouds/vector with spin_images of each object
 		// in object_database/object_database_spin_images
@@ -388,9 +333,6 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)//, parameter_b
   std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>* cloud_cluster (new std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>);
   euclidean_cluster_extraction (cloud_filtered_outlier, cloud_cluster);
 
-  // Publish the data
-  pub.publish (cloud_filtered_outlier);
-
   // Get spin_images of clusters of pointclouds and visualize the markers for each cluster
   std::vector<pcl::PointCloud<pcl::Histogram<153> >::Ptr> cluster_spin_images;
   for (int i=0; i<cloud_cluster->size(); ++i)
@@ -409,7 +351,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)//, parameter_b
 	  {
 		  for (int k=0; k<object_database_spin_images[i].size(); ++k)
 		  {
-			  R_database[j][k] = correlation_spin_images(cluster_spin_images[i], object_database_spin_images[j][k]);
+			  R_database[j][k] = correlation_cloud(object_database_spin_images[j][k], cluster_spin_images[i]);
 			  std::cout << " " << R_database[j][k] << "\n";
 		  }
 		  R_object.push_back(std::accumulate(R_database[j].begin(), R_database[j].end(), 0.0)/R_database[j].size());
@@ -418,20 +360,20 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)//, parameter_b
 				  	<< "\n";
 	  }
 	  // Print R values for objects
-	  float biggest_R = 0;
+	  float biggest_R =-std::numeric_limits<float>::infinity();
 	  for (std::vector<float>::const_iterator l = R_object.begin(); l != R_object.end(); ++l)
 	  {
 		  if (*l > biggest_R)
 		  {
 			  biggest_R = *l;
 		  }
-	      std::cout << *l << ' ';
 	  }
+	  std:: cout << "biggest_R: " << biggest_R << std::endl;
 
 	  // Create a marker for each cluster
 	  visualization_msgs::Marker::Ptr marker (new visualization_msgs::Marker);
 	  // Give different colours to the markers depending on which object is recognised
-	  if (biggest_R < 1.2)
+	  if (biggest_R < 0.93)
 	  {
 		  visualize_marker((*cloud_cluster)[i], marker, i, 1.0, 0.0, 0.0);
 	  }
@@ -446,6 +388,9 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)//, parameter_b
 
 	  // Publish the marker
       vis_pub.publish(marker);
+
+      // Publish the data
+      pub.publish (cloud_filtered_outlier);
   }
 }
 
