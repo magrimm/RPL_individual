@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <vector>
 #include <iterator>
+#include <limits>
 #include <ros/ros.h>
 // PCL specific includes
 #include <sensor_msgs/PointCloud2.h>
@@ -17,11 +18,14 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/filters/filter.h>				 //
+#include <pcl/filters/extract_indices.h>     //
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/common/common.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/filters/extract_indices.h>
+#include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/spin_image.h>
 #include <pcl/kdtree/kdtree.h>
