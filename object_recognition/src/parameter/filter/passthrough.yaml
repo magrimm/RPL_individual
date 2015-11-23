@@ -1,0 +1,6 @@
+min_filterlimit_x: 0.0                # Lower range limitation for filtering in x-direction
+min_filterlimit_y: 0.0                # Lower range limitation for filtering in y-direction
+min_filterlimit_z: 0.0                # Lower range limitation for filtering in z-direction
+max_filterlimit_x: 1.0                # Upper range limitation for filtering in x-direction
+max_filterlimit_y: 1.0                # Upper range limitation for filtering in y-direction
+max_filterlimit_z: 0.9                # Upper range limitation for filtering in z-direction

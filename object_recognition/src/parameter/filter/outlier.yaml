@@ -1,0 +1,2 @@
+meank: 10                                # Number of neighbors to analyze for each point
+stddev_mul_thresh: 1.0                   # Multiplication threshold for standard deviation of the mean distance to the query point
