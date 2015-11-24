@@ -12,7 +12,7 @@ cloud_segmentation::cloud_segmentation (segmentation_bag seg_bag)
 	segment_param = seg_bag;
 }
 
-void euclidean_cluster_extraction (pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud_filtered, std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>* a_vector_of_cloud_cluster)
+void cloud_segmentation::euclidean_cluster_extraction (pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud_filtered, std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>* a_vector_of_cloud_cluster)
 {
     // Creating the KdTree object for the search method of the extraction
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
