@@ -17,6 +17,7 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <visualization_msgs/Marker.h>
 #include <pcl/common/common.h>
+#include <pcl_ros/point_cloud.h>
 
 class cloud_handling
 {
@@ -28,10 +29,13 @@ public:
 	void visualize_marker (pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud_cluster,
 						   visualization_msgs::Marker::Ptr a_marker,
 						   int a_marker_id, float color_r, float color_g, float color_b);
+	std::vector<std::vector<pcl::PointCloud<pcl::Histogram<153> > > > object_database_spin_images;
+
 private:
 	parameter_bag parameter;
 	ros::NodeHandle nh;
 	ros::Subscriber sub;
+	ros::Publisher pub, vis_pub;
 };
 
 #endif /* CLOUD_HANDLING_H */
