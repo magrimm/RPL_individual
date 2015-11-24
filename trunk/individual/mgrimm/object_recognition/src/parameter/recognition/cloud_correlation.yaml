@@ -1,0 +1,8 @@
+hist_size: 153                                       # Histogram consists of hist_size entries
+
+correlation_thresh: 0.94                             # threshold for correlation grouping
+norm_est_radius: 0.02                                # 
+spin_image_descripter_radius: 0.05                   # 
+image_width: 8                                       #
+support_angle_cos: 0.5                               #
+min_pts_neighb: 16                                   # minimal number of points in neighbourhood
