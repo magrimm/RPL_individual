@@ -1,3 +1,3 @@
 cluster_tolerance: 0.02                        # [m] Distance threshold for clusters to be recognised as separate clusters
-min_cluster_size: 10                           # Minimum size of a cluster --> otherwise filtered
+min_cluster_size: 50                           # Minimum size of a cluster --> otherwise filtered
 max_cluster_size: 100000                       # Maximum size of a cluster --> otherwise filtered

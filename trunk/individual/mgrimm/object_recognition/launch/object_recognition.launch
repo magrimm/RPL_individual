@@ -5,5 +5,10 @@
   <node name="rviz_node" pkg="rviz" type="rviz" />
  
   <rosparam command="load" file="$(find object_recognition)/src/parameter/parameter.yaml" />
+  <rosparam command="load" file="$(find object_recognition)/src/parameter/filter/resolution.yaml" />
+  <rosparam command="load" file="$(find object_recognition)/src/parameter/filter/passthrough.yaml" />
+  <rosparam command="load" file="$(find object_recognition)/src/parameter/filter/outlier.yaml" />
+  <rosparam command="load" file="$(find object_recognition)/src/parameter/segmentation/euclidean_cluster.yaml" />
+  <rosparam command="load" file="$(find object_recognition)/src/parameter/visualization/marker.yaml" />
   
 </launch>

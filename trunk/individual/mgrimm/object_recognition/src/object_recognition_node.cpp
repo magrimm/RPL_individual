@@ -1,6 +1,5 @@
 #include <cloud_handling.h>
 #include <parameter/parameter_bag.h>
-#include <header_object_recognition.h>
 
 //ros::Publisher pub, vis_pub;
 //std::vector<std::vector<pcl::PointCloud<pcl::Histogram<153> > > > object_database_spin_images;
@@ -399,37 +398,62 @@
 
 int main (int argc, char** argv)
 {
-  // Initialize ROS
-  ros::init (argc, argv, "object_recognition_node");
-  ros::NodeHandle nh;
+	// Initialize ROS
+	ros::init (argc, argv, "object_recognition_node");
+	ros::NodeHandle nh;
 
-  // Initialize parameter structure
-  parameter_bag parameter;
+	// Initialize parameter structure
+	parameter_bag parameter;
 
-  nh.getParam("subscribed_rostopic", parameter.subscribed_rostopic);
-  nh.getParam("queue_size_subscriber", parameter.queue_size_subscriber);
-  nh.getParam("pub_topic_pointcloud", parameter.pub_topic_pointcloud);
-  nh.getParam("pub_topic_marker", parameter.pub_topic_marker);
-  nh.getParam("cloud_frame_id", parameter.cloud_frame_id);
+	// Retrieve all parameters
+	nh.getParam("subscribed_rostopic", parameter.subscribed_rostopic);
+	nh.getParam("queue_size_subscriber", parameter.queue_size_subscriber);
+	nh.getParam("pub_topic_pointcloud", parameter.pub_topic_pointcloud);
+	nh.getParam("pub_topic_marker", parameter.pub_topic_marker);
+	nh.getParam("cloud_frame_id", parameter.cloud_frame_id);
 
-  nh.getParam("leafsize_x", parameter.filter.resolution.leafsize_x);
-  nh.getParam("leafsize_y", parameter.filter.resolution.leafsize_y);
-  nh.getParam("leafsize_z", parameter.filter.resolution.leafsize_z);
+	nh.getParam("leafsize_x", parameter.filter.resolution.leafsize_x);
+	nh.getParam("leafsize_y", parameter.filter.resolution.leafsize_y);
+	nh.getParam("leafsize_z", parameter.filter.resolution.leafsize_z);
 
-  // Convert pcd to pointcloud.
-//  features_of_objects ();
+	nh.getParam("min_filterlimit_x", parameter.filter.passthrough.min_filterlimit_x);
+	nh.getParam("min_filterlimit_y", parameter.filter.passthrough.min_filterlimit_y);
+	nh.getParam("min_filterlimit_z", parameter.filter.passthrough.min_filterlimit_z);
+	nh.getParam("max_filterlimit_x", parameter.filter.passthrough.max_filterlimit_x);
+	nh.getParam("max_filterlimit_y", parameter.filter.passthrough.max_filterlimit_y);
+	nh.getParam("max_filterlimit_z", parameter.filter.passthrough.max_filterlimit_z);
 
-  // Create a ROS subscriber for the input point cloud
-//  ros::Subscriber sub = nh.subscribe(parameter.subscribed_rostopic, parameter.queue_size_subscriber, cloud_cb);
-  cloud_handling c_handling (nh, parameter);
-  c_handling.features_of_objects();
-  c_handling.Match();
+	nh.getParam("meank", parameter.filter.outlier.meank);
+	nh.getParam("stddev_mul_thresh", parameter.filter.outlier.stddev_mul_thresh);
 
-//  // Create a ROS publisher for the output point cloud
-//  pub = nh.advertise<pcl::PointCloud<pcl::PointXYZ> > (parameter.pub_topic_pointcloud, 1);
-//  // Create a ROS publisher for the marker visualization
-//  vis_pub = nh.advertise<visualization_msgs::Marker>(parameter.pub_topic_marker, 1);
+	nh.getParam("min_cluster_size", parameter.segmentation.euclidean_cluster.min_cluster_size);
+	nh.getParam("max_cluster_size", parameter.segmentation.euclidean_cluster.max_cluster_size);
+	nh.getParam("cluster_tolerance", parameter.segmentation.euclidean_cluster.cluster_tolerance);
 
-  // Spin
-  ros::spin ();
+	nh.getParam("color_alpha", parameter.visualization.marker.color_alpha);
+	nh.getParam("frame_id", parameter.visualization.marker.frame_id);
+	nh.getParam("orientation_x", parameter.visualization.marker.orientation_x);
+	nh.getParam("orientation_y", parameter.visualization.marker.orientation_y);
+	nh.getParam("orientation_z", parameter.visualization.marker.orientation_z);
+	nh.getParam("orientation_w", parameter.visualization.marker.orientation_w);
+	nh.getParam("color_r_duck", parameter.visualization.marker.color_r_duck);
+	nh.getParam("color_g_duck", parameter.visualization.marker.color_r_duck);
+	nh.getParam("color_b_duck", parameter.visualization.marker.color_r_duck);
+	nh.getParam("color_r_duck", parameter.visualization.marker.color_r_human);
+	nh.getParam("color_g_duck", parameter.visualization.marker.color_r_human);
+	nh.getParam("color_b_duck", parameter.visualization.marker.color_r_human);
+	nh.getParam("color_r_duck", parameter.visualization.marker.color_r_unknown);
+	nh.getParam("color_g_duck", parameter.visualization.marker.color_r_unknown);
+	nh.getParam("color_b_duck", parameter.visualization.marker.color_r_unknown);
+
+	// Construct class cloud_handling with ros::NodeHandle and parameter structure
+	cloud_handling c_handling (nh, parameter);
+	// Load .pcd files of objects and convert to pointclouds and spin_images
+	c_handling.features_of_objects();
+
+	// Create a ROS subscriber for the input point cloud
+	ros::Subscriber sub = nh.subscribe(parameter.subscribed_rostopic, parameter.queue_size_subscriber, &cloud_handling::Callback, &c_handling);
+
+	// Spin
+	ros::spin ();
 }

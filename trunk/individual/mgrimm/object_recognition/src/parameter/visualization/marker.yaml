@@ -8,6 +8,15 @@ orientation_z: 0.0                                                   # marker qu
 orientation_w: 1.0                                                   # marker quarternion component in w-direction
 
 color_alpha: 0.5                                                     # transparancy of the marker
-color_r: 0.0                                                         # red part of the marker
-color_g: 1.0                                                         # green part of the marker
-color_b: 0.0                                                         # blue part of the marker
+
+color_r_duck: 0.0                                                    # red part of the marker in case of a duck object
+color_g_duck: 0.0                                                    # green part of the marker in case of a duck object
+color_b_duck: 1.0                                                    # blue part of the marker in case of a duck object
+
+color_r_human: 0.0                                                   # red part of the marker in case of a human object
+color_g_human: 1.0                                                   # green part of the marker in case of a human object
+color_b_human: 0.0                                                   # blue part of the marker in case of a human object
+
+color_r_unknown: 1.0                                                 # red part of the marker in case of a unknown object
+color_g_unknown: 0.0                                                 # green part of the marker in case of a unkown object
+color_b_unknown: 0.0                                                 # blue part of the marker in case of a unkown object

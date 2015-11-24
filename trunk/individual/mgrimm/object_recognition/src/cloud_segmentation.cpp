@@ -23,7 +23,7 @@ void cloud_segmentation::euclidean_cluster_extraction (pcl::PointCloud<pcl::Poin
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
     ec.setClusterTolerance (0.02);
     // Filter too small or too big clusters
-    ec.setMinClusterSize (10);
+    ec.setMinClusterSize (50);
     ec.setMaxClusterSize (100000);
     ec.setSearchMethod (tree);
     ec.setInputCloud (a_cloud_filtered);
