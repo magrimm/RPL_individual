@@ -26,28 +26,6 @@ paths are defined there.
 III. File/directory structure
 -------------------------------
 
-Class Hierachy
-
-   |---------|           |----------|	       |----------|
-   |   APP   |---------->|   ROBOT  |--------->|  PLANNER |
-   |---------|           |----------|	       |----------|	      
-						     |
-						     |
-						     | 
-						     \/
-                                             |--------------|
-                                             |  CONTROLLER  |
-                                             |--------------|
-                     			        ^        ^ 
-					       /          \                             
-                  			      /            \                            
-                                             /              \
-                  			    /                \  										
-      			    |----------------------|       |------------|
-          	            |  FEATURE_CONTROLLER  |       |   ERROR    |
-             	            |----------------------|       |------------|
-
-
 In the /<your-nethz-name>/object_recognition/src/ directory:
 * object_recognition_node.cpp		- Main file of the project with executable int main() 
 * cloud_handling.cpp			- Processes the callback 
@@ -93,19 +71,36 @@ IV. How it works?
 -------------------------------
 
 1) Parameter structure:
+The parameter structure allows the user to parse around the specific sets of parameters.
+With the help of rosparam the parameters can be easily saved in a .yaml file.
+The parameter implementation/parsing is done with the help of the header file structure in 
+/<your-nethz-name>/object_recognition/include/parameter/ directory. The parameter_bag.h file 
+represents the hightest level of parameter and contains structs with lower level of parameter
+as for example filter_bag. Within this eg filter_bag is again struct subset which contain
+the parameter of the specific eg filter. This parameter can be accessed in filter/<<>>.h .
 
-
-APPLICATION class creates an instance of ROBOT class where the implemented behaviours of
-the robot are called. Those behaviours are defined in the class PLANNER. Further, it accesses 
-class CONTROLLER where the PID controller for the linear and angular velocity are
-implemented. For the calculation of the distance and orientation error the additional 
-class ERROR is passing on the data. The light and sound features within the CONTROLLER are
-called from the class FEATURE_CONTROLLER.
+2)
+The code itself is structured in a clear pattern. The main() initialises ros and the parameters.
+Furthermore, the subscription to the camera topic is done in which the callback function is 
+called over and over again.
+The callback function is implemented in the class cloud_handling. A database of spin images of the 
+.pcd files for the objects is created. In the callback itself all filters (class cloud_filter)
+are going to be appliedto the original pointcloud received by the camera. After resolution, 
+passthrough and outlier filtering the segmentation takes place. The remaining poincloud has to 
+be divided into different clusters if more than one object is to be seen. For this a euclidean 
+cluster extraction (class cloud_segmentation) is applied. Each cluster of the scene is going
+to be compared now with the database of the objects. For that spin images are also being created
+for the scene. After all we receive a correspondance value between (-1,1) which represents the 
+quality of fit. The objects can be compared now directly to the scene and the highest value
+above a certain threshold should represent now in theory the object. 
+Finally, a visualization maker (class cloud_visualization) is displayed in a certain colour to
+indicate the recognised object.
 
 
 V. Limitations
 -------------------------------
 
-Due to the inaccuracies of the robot THYMIO 2 it is adviced to properly calibrate the robot.
-Otherwise the odometry data is misleading and your goal coordinates will not be reached
-precisely.
+A good finetuning of the tuning knobs is require to get a reasonable result. Also certain 
+thresholds for eg an unknown object are limiting the precision of the process. 
+Furthermore, is it important to have good .pcd files of the object to build a reliable 
+database of the objects.
