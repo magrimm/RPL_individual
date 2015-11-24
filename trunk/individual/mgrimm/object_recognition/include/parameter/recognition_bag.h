@@ -10,7 +10,7 @@
 
 struct recognition_bag
 {
-
+	cloud_correlation correlation;
 };
 
 #endif /* RECOGNITION_BAG_H */

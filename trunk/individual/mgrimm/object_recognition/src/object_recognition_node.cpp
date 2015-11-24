@@ -411,25 +411,26 @@ int main (int argc, char** argv)
 	nh.getParam("pub_topic_pointcloud", parameter.pub_topic_pointcloud);
 	nh.getParam("pub_topic_marker", parameter.pub_topic_marker);
 	nh.getParam("cloud_frame_id", parameter.cloud_frame_id);
-
+	nh.getParam("object_files_path", parameter.object_files_path);
+	// Retrieve parameters for resolution_filter
 	nh.getParam("leafsize_x", parameter.filter.resolution.leafsize_x);
 	nh.getParam("leafsize_y", parameter.filter.resolution.leafsize_y);
 	nh.getParam("leafsize_z", parameter.filter.resolution.leafsize_z);
-
+	// Retrieve parameters for passthrough_filter
 	nh.getParam("min_filterlimit_x", parameter.filter.passthrough.min_filterlimit_x);
 	nh.getParam("min_filterlimit_y", parameter.filter.passthrough.min_filterlimit_y);
 	nh.getParam("min_filterlimit_z", parameter.filter.passthrough.min_filterlimit_z);
 	nh.getParam("max_filterlimit_x", parameter.filter.passthrough.max_filterlimit_x);
 	nh.getParam("max_filterlimit_y", parameter.filter.passthrough.max_filterlimit_y);
 	nh.getParam("max_filterlimit_z", parameter.filter.passthrough.max_filterlimit_z);
-
+	// Retrieve parameters for statistical_outlier_removal_filter
 	nh.getParam("meank", parameter.filter.outlier.meank);
 	nh.getParam("stddev_mul_thresh", parameter.filter.outlier.stddev_mul_thresh);
-
+	// Retrieve parameters for euclidean_cluster_extraction (segmentation)
 	nh.getParam("min_cluster_size", parameter.segmentation.euclidean_cluster.min_cluster_size);
 	nh.getParam("max_cluster_size", parameter.segmentation.euclidean_cluster.max_cluster_size);
 	nh.getParam("cluster_tolerance", parameter.segmentation.euclidean_cluster.cluster_tolerance);
-
+	// Retrieve parameters for visualization of the marker
 	nh.getParam("color_alpha", parameter.visualization.marker.color_alpha);
 	nh.getParam("frame_id", parameter.visualization.marker.frame_id);
 	nh.getParam("orientation_x", parameter.visualization.marker.orientation_x);

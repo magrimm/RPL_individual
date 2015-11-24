@@ -36,7 +36,6 @@ void cloud_matching::spin_image (pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud, pc
 
 	// Actually compute the spin images
 	spin_image_descriptor.compute (*spin_images);
-	std::cout << "SI output points.size (): " << spin_images->points.size () << std::endl;
 }
 
 float cloud_matching::correlation_image (pcl::Histogram<153> P, pcl::Histogram <153> Q)

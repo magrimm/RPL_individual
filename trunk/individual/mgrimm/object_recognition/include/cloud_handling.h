@@ -12,11 +12,11 @@
 #include <cloud_filter.h>
 #include <cloud_segmentation.h>
 #include <cloud_matching.h>
+#include <cloud_visualization.h>
 #include <ros/ros.h>
+#include <visualization_msgs/Marker.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <visualization_msgs/Marker.h>
-#include <pcl/common/common.h>
 #include <pcl_ros/point_cloud.h>
 
 class cloud_handling

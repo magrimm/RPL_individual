@@ -21,7 +21,8 @@ struct parameter_bag
 	recognition_bag recognition;
 	visualization_bag visualization;
 
-	std::string node_name, subscribed_rostopic, pub_topic_pointcloud, pub_topic_marker, cloud_frame_id;
+	std::string node_name, cloud_frame_id, object_files_path;
+	std::string subscribed_rostopic, pub_topic_pointcloud, pub_topic_marker;
 	int queue_size_subscriber, queue_size_pub_pointcloud, queue_size_pub_marker;
 };
 
