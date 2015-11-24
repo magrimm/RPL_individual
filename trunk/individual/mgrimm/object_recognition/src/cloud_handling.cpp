@@ -42,21 +42,22 @@ void cloud_handling::features_of_objects ()
 	for (std::string line_object_files; std::getline(inFile_object_files, line_object_files);)
 	{
 		std::cout << "\nLine_object_files: "
-				  << line_object_files
+				  << boost::filesystem::current_path().string()+line_object_files
 				  << std::endl;
 
+		line_object_files = boost::filesystem::current_path().string()+line_object_files;
 		std::ifstream inFile_line_object_files (line_object_files.c_str());
 		for (std::string line_object_pcdfiles; std::getline(inFile_line_object_files, line_object_pcdfiles);)
 		{
 			std::cout << "Line_object_pcdfiles: "
-					  << line_object_pcdfiles
+					  << boost::filesystem::current_path().string()+line_object_pcdfiles
 					  << std::endl;
 
 			// Convert the .pcd file to pointcloud data and print Error if file not readable
-			if (pcl::io::loadPCDFile<pcl::PointXYZ> (line_object_pcdfiles, *cloud) == -1)
+			if (pcl::io::loadPCDFile<pcl::PointXYZ> (boost::filesystem::current_path().string()+line_object_pcdfiles, *cloud) == -1)
 			{
 		    std::cout << "Couldn't read file "
-		    		  << line_object_pcdfiles
+		    		  << boost::filesystem::current_path().string()+line_object_pcdfiles
 					  << "\n";
 			}
 			// Construct the class cloud_matching with its parameters.
