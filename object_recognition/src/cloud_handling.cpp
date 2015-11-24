@@ -23,29 +23,25 @@ cloud_handling::cloud_handling (ros::NodeHandle nodehandle, parameter_bag params
 													   true);
 }
 
-void cloud_handling::Match ()
-{
-	ros::Subscriber sub = nh.subscribe(parameter.subscribed_rostopic, parameter.queue_size_subscriber, &cloud_handling::Callback, this);
-}
-
 void cloud_handling::features_of_objects ()
 {
 	// Define Path of object .txt file
-	std::string object_files_path = "/home/marius/catkin_ws/src/mgrimm/object_recognition/object_files.txt";
-	std::ifstream inFile_object_files (object_files_path.c_str());
+	std::ifstream inFile_object_files (parameter.object_files_path.c_str());
+
 	// Create pointcloud objects and the referring database
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_sampled (new pcl::PointCloud<pcl::PointXYZ>);
 	std::vector<pcl::PointCloud<pcl::PointXYZ> > a_vector;
 	std::vector<std::vector<pcl::PointCloud<pcl::PointXYZ> > > object_database;
+
 	// Create spin_image objects and the referring database
 	pcl::PointCloud<pcl::Histogram<153> >::Ptr spin_images (new pcl::PointCloud<pcl::Histogram<153> >);
 	std::vector<pcl::PointCloud<pcl::Histogram<153> > > a_vector_spin_images;
 
-	// Printing all pcd-files which are going to be converted to a pointcloud
+	// Scanning all pcd-files which are going to be converted to a pointcloud
 	for (std::string line_object_files; std::getline(inFile_object_files, line_object_files);)
 	{
-		std::cout << "Line_object_files: "
+		std::cout << "\nLine_object_files: "
 				  << line_object_files
 				  << std::endl;
 
@@ -56,7 +52,7 @@ void cloud_handling::features_of_objects ()
 					  << line_object_pcdfiles
 					  << std::endl;
 
-			// Convert the .pcd file to pointcloud data.
+			// Convert the .pcd file to pointcloud data and print Error if file not readable
 			if (pcl::io::loadPCDFile<pcl::PointXYZ> (line_object_pcdfiles, *cloud) == -1)
 			{
 		    std::cout << "Couldn't read file "
@@ -65,16 +61,20 @@ void cloud_handling::features_of_objects ()
 			}
 			// Construct the class cloud_matching with its parameters.
 			cloud_matching c_matching (parameter.recognition);
+
 			// Convert Pointcloud to spin_image
 			c_matching.spin_image(cloud, spin_images);
+
 			// Push back Pointclouds/spin_images in vector a_vector/a_vector_spin_images
 			a_vector.push_back (*cloud);
 			a_vector_spin_images.push_back (*spin_images);
 		}
+
 		// Push back vector with pointclouds/vector with spin_images of each object
 		// in object_database/object_database_spin_images
 		object_database.push_back(a_vector);
 		object_database_spin_images.push_back(a_vector_spin_images);
+
 		// Empty the vector a_vector and a_vector_spin_images thus they can be filled again
 		a_vector.clear();
 		a_vector_spin_images.clear();
@@ -133,7 +133,7 @@ void cloud_handling::Callback (const sensor_msgs::PointCloud2ConstPtr& cloud_msg
 		  std::vector<std::vector<float> > R_database(object_database_spin_images.size(), std::vector<float>(object_database_spin_images[i].size()));
 		  std::vector<float> R_object;
 
-		  std::cout << "R_database: \n";
+		  // Get correlation values of current scene with each object (in R_object)
 		  for (int j=0; j<object_database_spin_images.size(); ++j)
 		  {
 			  for (int k=0; k<object_database_spin_images[i].size(); ++k)
@@ -154,60 +154,38 @@ void cloud_handling::Callback (const sensor_msgs::PointCloud2ConstPtr& cloud_msg
 			  {
 			      biggest_R = *l;
 		      }
-		  	  std::cout << *l << " ";
 		  }
-		  std:: cout << " biggest_R: " << biggest_R << std::endl;
-
+		  std:: cout << "| biggest_R: " << biggest_R << " |" << std::endl;
 
 		  // Create a marker for each cluster
 		  visualization_msgs::Marker::Ptr marker (new visualization_msgs::Marker);
-		  // Delete the old markers
-		  marker->action=3;
+
+		  // Construct class cloud_visualization
+		  cloud_visualization c_visualization (parameter.visualization);
+
 		  // Give different colours to the markers depending on which object is recognised
-		  if (biggest_R < 0.94)
+		  if (biggest_R < parameter.recognition.correlation.correlation_thresh)
 		  {
-			  visualize_marker((*cloud_cluster)[i], marker, i, 1.0, 0.0, 0.0);
+			  c_visualization.visualize_marker((*cloud_cluster)[i], marker, i, parameter.visualization.marker.color_r_unknown,
+					  	  	  	  	  	  	  	  	  	  	  	  	  	  	   parameter.visualization.marker.color_g_unknown,
+																			   parameter.visualization.marker.color_b_unknown);
 		  }
 		  else if (biggest_R == R_object[0])
 		  {
-			  visualize_marker((*cloud_cluster)[i], marker, i, 0.0, 0.0, 1.0);
+			  c_visualization.visualize_marker((*cloud_cluster)[i], marker, i, parameter.visualization.marker.color_r_duck,
+					  	  	  	  	  	  	  	  	  	  	  	  	  	  	   parameter.visualization.marker.color_g_duck,
+																			   parameter.visualization.marker.color_b_duck);
 		  }
 		  else
 		  {
-			  visualize_marker((*cloud_cluster)[i], marker, i, 0.0, 1.0, 0.0);
+			  c_visualization.visualize_marker((*cloud_cluster)[i], marker, i, parameter.visualization.marker.color_r_human,
+					  	  	  	  	  	  	  	  	  	  	  	  	  	  	   parameter.visualization.marker.color_g_human,
+																			   parameter.visualization.marker.color_b_human);
 		  }
 
 		  // Publish the marker
 		  vis_pub.publish(marker);
+		  // Publish the data
+		  pub.publish (cloud_filtered_outlier);
 	}
-}
-
-void cloud_handling::visualize_marker (pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud_cluster, visualization_msgs::Marker::Ptr a_marker, int a_marker_id, float color_r, float color_g, float color_b)
-{
-	  Eigen::Vector4f min_vector, max_vector;
-	  pcl::getMinMax3D(*a_cloud_cluster, min_vector, max_vector);
-
-	  // SET MARKER
-	  a_marker->header.frame_id = "camera_depth_optical_frame";
-	  a_marker->header.stamp = ros::Time();
-	  a_marker->ns = "my_namespace";
-	  a_marker->id = a_marker_id;
-	  a_marker->type = visualization_msgs::Marker::CUBE;
-	  a_marker->action = visualization_msgs::Marker::ADD;
-	  a_marker->pose.position.x = (max_vector[0] + min_vector[0])/2;
-	  a_marker->pose.position.y = (max_vector[1] + min_vector[1])/2;
-	  a_marker->pose.position.z = (max_vector[2] + min_vector[2])/2;
-	  a_marker->pose.orientation.x = 0.0;
-	  a_marker->pose.orientation.y = 0.0;
-	  a_marker->pose.orientation.z = 0.0;
-	  a_marker->pose.orientation.w = 1.0;
-	  a_marker->scale.x = std::abs(max_vector[0] - min_vector[0]);
-	  a_marker->scale.y = std::abs(max_vector[1] - min_vector[1]);
-	  a_marker->scale.z = std::abs(max_vector[2] - min_vector[2]);
-	  a_marker->color.a = 0.5;
-	  a_marker->color.r = color_r;
-	  a_marker->color.g = color_g;
-	  a_marker->color.b = color_b;
-	  //only if using a MESH_RESOURCE marker type:
-	  a_marker->mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
 }

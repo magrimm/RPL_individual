@@ -10,5 +10,8 @@
   <rosparam command="load" file="$(find object_recognition)/src/parameter/filter/outlier.yaml" />
   <rosparam command="load" file="$(find object_recognition)/src/parameter/segmentation/euclidean_cluster.yaml" />
   <rosparam command="load" file="$(find object_recognition)/src/parameter/visualization/marker.yaml" />
+  <rosparam command="load" file="$(find object_recognition)/src/parameter/recognition/cloud_correlation.yaml" />
+  
+  <param name="object_files_path" type="str" value="$(find object_recognition)/object_files.txt" />
   
 </launch>

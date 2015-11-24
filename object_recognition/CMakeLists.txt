@@ -140,6 +140,7 @@ add_executable(object_recognition
 	src/cloud_filter.cpp
 	src/cloud_segmentation.cpp
 	src/cloud_matching.cpp
+	src/cloud_visualization.cpp
 )
 
 ## Add cmake target dependencies of the executable
