@@ -22,17 +22,19 @@ void cloud_matching::spin_image (pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud, pc
 	normal_estimation.setSearchMethod (kdtree);
 
 	pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud< pcl::Normal>);
-	normal_estimation.setRadiusSearch (0.05);
+	normal_estimation.setRadiusSearch (recog_param.correlation.norm_est_radius);
 	normal_estimation.compute (*normals);
 
 	// Setup spin image computation
-	pcl::SpinImageEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<153> > spin_image_descriptor(8, 0.5, 16);
+	pcl::SpinImageEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<153> > spin_image_descriptor(recog_param.correlation.image_width,
+																									 recog_param.correlation.support_angle_cos,
+																									 recog_param.correlation.min_pts_neighb);
 	spin_image_descriptor.setInputCloud (a_cloud);
 	spin_image_descriptor.setInputNormals (normals);
 
 	// Use the same KdTree from the normal estimation
 	spin_image_descriptor.setSearchMethod (kdtree);
-	spin_image_descriptor.setRadiusSearch (0.2);
+	spin_image_descriptor.setRadiusSearch (recog_param.correlation.spin_image_descriptor_radius);
 
 	// Actually compute the spin images
 	spin_image_descriptor.compute (*spin_images);
@@ -40,15 +42,14 @@ void cloud_matching::spin_image (pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud, pc
 
 float cloud_matching::correlation_image (pcl::Histogram<153> P, pcl::Histogram <153> Q)
 {
-	int hist_size = 153;
-	float sum_P = std::accumulate(P.histogram, P.histogram + hist_size, 0.0);
-	float sum_Q = std::accumulate(Q.histogram, Q.histogram + hist_size, 0.0);
-	float sum_PQ = std::inner_product(P.histogram, P.histogram + hist_size, Q.histogram, 0.0);
-	float sum_sqr_P = std::inner_product(P.histogram, P.histogram + hist_size, P.histogram, 0.0);
-	float sum_sqr_Q = std::inner_product(Q.histogram, Q.histogram + hist_size, Q.histogram, 0.0);
+	float sum_P = std::accumulate(P.histogram, P.histogram + recog_param.hist_size, 0.0);
+	float sum_Q = std::accumulate(Q.histogram, Q.histogram + recog_param.hist_size, 0.0);
+	float sum_PQ = std::inner_product(P.histogram, P.histogram + recog_param.hist_size, Q.histogram, 0.0);
+	float sum_sqr_P = std::inner_product(P.histogram, P.histogram + recog_param.hist_size, P.histogram, 0.0);
+	float sum_sqr_Q = std::inner_product(Q.histogram, Q.histogram + recog_param.hist_size, Q.histogram, 0.0);
 
-	float R = ((hist_size*sum_PQ)-(sum_P*sum_Q))/std::sqrt(((hist_size*sum_sqr_P)-std::pow(sum_P, 2))*
-														((hist_size*sum_sqr_Q)-std::pow(sum_Q, 2)));
+	float R = ((recog_param.hist_size*sum_PQ)-(sum_P*sum_Q))/std::sqrt(((recog_param.hist_size*sum_sqr_P)-std::pow(sum_P, 2))*
+														((recog_param.hist_size*sum_sqr_Q)-std::pow(sum_Q, 2)));
 
 	return R;
 }
@@ -56,7 +57,6 @@ float cloud_matching::correlation_image (pcl::Histogram<153> P, pcl::Histogram <
 float cloud_matching::correlation_cloud (pcl::PointCloud<pcl::Histogram<153> > &a_spin_images1, pcl::PointCloud<pcl::Histogram<153> >::Ptr a_spin_images2)
 {
 	std::vector<float> R_vector;
-	int histo_size = 153, count_corr;
 	for (int i=0; i<a_spin_images1.points.size(); ++i)
 	{
 		float R=-std::numeric_limits<float>::infinity();
