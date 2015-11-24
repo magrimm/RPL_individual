@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 find_package(PCL 1.7 REQUIRED)
 
-##SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x ")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Ofast ") ##-std=c++0x
 
 ## System dependencies are found with CMake's conventions
 ##find_package(Boost REQUIRED COMPONENTS system)
@@ -119,6 +119,7 @@ catkin_package(
 include_directories(
 	${catkin_INCLUDE_DIRS}
 	${PCL_INCLUDE_DIRS}
+	include
 )
 
 ## Declare a C++ library
@@ -135,6 +136,9 @@ include_directories(
 # add_executable(object_recognition_node src/object_recognition_node.cpp)
 add_executable(object_recognition 
 	src/object_recognition_node.cpp
+	src/cloud_handling.cpp
+	src/cloud_filter.cpp
+	src/cloud_segmentation.cpp
 )
 
 ## Add cmake target dependencies of the executable

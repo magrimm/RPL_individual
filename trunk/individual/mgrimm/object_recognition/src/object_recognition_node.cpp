@@ -1,8 +1,11 @@
-#include </home/marius/catkin_ws/src/mgrimm/object_recognition/src/header_object_recognition.h>
+#include <cloud_handling.h>
+#include <parameter/parameter_bag.h>
+#include <header_object_recognition.h>
 
 ros::Publisher pub, vis_pub;
 std::vector<std::vector<pcl::PointCloud<pcl::Histogram<153> > > > object_database_spin_images;
 
+/*
 struct parameter_bag
 {
 	struct filter_bag;
@@ -33,7 +36,7 @@ struct recognition_bag
 
 struct visualization_bag
 {
-	struct maker_bag;
+	struct marker_bag;
 };
 
 struct resolution_filter_bag
@@ -65,6 +68,8 @@ struct marker_bag
 	float orientation_x, orientation_y, orientation_z, orientation_w;
 	float color_alpha, color_r, color_g, color_b;
 };
+
+*/
 
 void resolution_filter (pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud_filtered, float a_leafsize_x, float a_leafsize_y, float a_leafsize_z)
 {
@@ -189,7 +194,7 @@ void spin_image (pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud, pcl::PointCloud<pc
 	normal_estimation.setSearchMethod (kdtree);
 
 	pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud< pcl::Normal>);
-	normal_estimation.setRadiusSearch (0.10);
+	normal_estimation.setRadiusSearch (0.05);
 	normal_estimation.compute (*normals);
 
 	// Setup spin image computation
@@ -237,10 +242,6 @@ float correlation_cloud (pcl::PointCloud<pcl::Histogram<153> > &a_spin_images1, 
 			if (R_temp > R)
 			{
 				R = R_temp;
-			}
-			if (R > 0.93)
-			{
-				count_corr += count_corr;
 			}
 		}
 		R_vector.push_back(R);
@@ -306,7 +307,7 @@ void features_of_objects ()
 	}
 }
 
-void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)//, parameter_bag parameter)
+void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
   // Container for original & filtered data
   pcl::PCLPointCloud2* temp_cloud (new pcl::PCLPointCloud2);
@@ -337,6 +338,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)//, parameter_b
   std::vector<pcl::PointCloud<pcl::Histogram<153> >::Ptr> cluster_spin_images;
   for (int i=0; i<cloud_cluster->size(); ++i)
   {
+	  // Get spin_images of clusters of pointclouds
 	  pcl::PointCloud<pcl::Histogram<153> >::Ptr spin_images (new pcl::PointCloud<pcl::Histogram<153> >);
 	  spin_image ((*cloud_cluster)[i], spin_images);
 
@@ -346,13 +348,13 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)//, parameter_b
 	  // Compare the spin_images of the object with the spin_images of the clusters
 	  std::vector<std::vector<float> > R_database(object_database_spin_images.size(), std::vector<float>(object_database_spin_images[i].size()));
 	  std::vector<float> R_object;
+
 	  std::cout << "R_database: \n";
 	  for (int j=0; j<object_database_spin_images.size(); ++j)
 	  {
 		  for (int k=0; k<object_database_spin_images[i].size(); ++k)
 		  {
 			  R_database[j][k] = correlation_cloud(object_database_spin_images[j][k], cluster_spin_images[i]);
-			  std::cout << " " << R_database[j][k] << "\n";
 		  }
 		  R_object.push_back(std::accumulate(R_database[j].begin(), R_database[j].end(), 0.0)/R_database[j].size());
 		  std::cout << "Average_R_object_" << j+1 << " : "
@@ -367,8 +369,9 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)//, parameter_b
 		  {
 			  biggest_R = *l;
 		  }
+		  std::cout << *l << " ";
 	  }
-	  std:: cout << "biggest_R: " << biggest_R << std::endl;
+	  std:: cout << " biggest_R: " << biggest_R << std::endl;
 
 	  // Create a marker for each cluster
 	  visualization_msgs::Marker::Ptr marker (new visualization_msgs::Marker);
@@ -400,10 +403,7 @@ int main (int argc, char** argv)
   ros::init (argc, argv, "object_recognition_node");
   ros::NodeHandle nh;
 
-  // Get rosparam.
-//  std::string subscribed_rostopic, pub_topic_pointcloud, pub_topic_marker;
-//  int queue_size_subscriber;
-
+  // Initialize parameter structure
   parameter_bag parameter;
 
   nh.getParam("subscribed_rostopic", parameter.subscribed_rostopic);
@@ -412,11 +412,17 @@ int main (int argc, char** argv)
   nh.getParam("pub_topic_marker", parameter.pub_topic_marker);
   nh.getParam("cloud_frame_id", parameter.cloud_frame_id);
 
+  nh.getParam("leafsize_x", parameter.filter.resolution.leafsize_x);
+  nh.getParam("leafsize_y", parameter.filter.resolution.leafsize_y);
+  nh.getParam("leafsize_z", parameter.filter.resolution.leafsize_z);
+
   // Convert pcd to pointcloud.
   features_of_objects ();
 
   // Create a ROS subscriber for the input point cloud
-  ros::Subscriber sub = nh.subscribe(parameter.subscribed_rostopic, parameter.queue_size_subscriber, cloud_cb);//boost::bind(cloud_cb, _1, parameter));
+//  ros::Subscriber sub = nh.subscribe(parameter.subscribed_rostopic, parameter.queue_size_subscriber, cloud_cb);
+  cloud_handling c_handling (nh, parameter);
+  c_handling.Match();
 
   // Create a ROS publisher for the output point cloud
   pub = nh.advertise<pcl::PointCloud<pcl::PointXYZ> > (parameter.pub_topic_pointcloud, 1);
