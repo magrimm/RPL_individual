@@ -1,4 +1,4 @@
-/home/marius/catkin_ws/src/mgrimm/object_recognition/object_pcdfiles_1.txt
-/home/marius/catkin_ws/src/mgrimm/object_recognition/object_pcdfiles_2.txt
-/home/marius/catkin_ws/src/mgrimm/object_recognition/object_pcdfiles_3.txt
-/home/marius/catkin_ws/src/mgrimm/object_recognition/object_pcdfiles_4.txt
+/src/mgrimm/object_recognition/object_pcdfiles_1.txt
+/src/mgrimm/object_recognition/object_pcdfiles_2.txt
+/src/mgrimm/object_recognition/object_pcdfiles_3.txt
+/src/mgrimm/object_recognition/object_pcdfiles_4.txt
