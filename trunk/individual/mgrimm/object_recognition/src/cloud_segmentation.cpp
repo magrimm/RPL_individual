@@ -12,7 +12,8 @@ cloud_segmentation::cloud_segmentation (segmentation_bag seg_bag)
 	segment_param = seg_bag;
 }
 
-void cloud_segmentation::euclidean_cluster_extraction (pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud_filtered, std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>* a_vector_of_cloud_cluster)
+void cloud_segmentation::euclidean_cluster_extraction (pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud_filtered,
+													   std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>* a_vector_of_cloud_cluster)
 {
     // Creating the KdTree object for the search method of the extraction
     pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
@@ -21,10 +22,10 @@ void cloud_segmentation::euclidean_cluster_extraction (pcl::PointCloud<pcl::Poin
     // Seperate clusters by distance
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-    ec.setClusterTolerance (0.02);
+    ec.setClusterTolerance (segment_param.euclidean_cluster.cluster_tolerance);
     // Filter too small or too big clusters
-    ec.setMinClusterSize (50);
-    ec.setMaxClusterSize (100000);
+    ec.setMinClusterSize (segment_param.euclidean_cluster.min_cluster_size);
+    ec.setMaxClusterSize (segment_param.euclidean_cluster.max_cluster_size);
     ec.setSearchMethod (tree);
     ec.setInputCloud (a_cloud_filtered);
     ec.extract (cluster_indices);

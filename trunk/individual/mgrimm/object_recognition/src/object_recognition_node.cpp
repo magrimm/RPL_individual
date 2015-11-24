@@ -430,6 +430,8 @@ int main (int argc, char** argv)
 	nh.getParam("min_cluster_size", parameter.segmentation.euclidean_cluster.min_cluster_size);
 	nh.getParam("max_cluster_size", parameter.segmentation.euclidean_cluster.max_cluster_size);
 	nh.getParam("cluster_tolerance", parameter.segmentation.euclidean_cluster.cluster_tolerance);
+	// Retrieve parameters for object recognition
+	nh.getParam("correlation_thresh", parameter.recognition.correlation.correlation_thresh);
 	// Retrieve parameters for visualization of the marker
 	nh.getParam("color_alpha", parameter.visualization.marker.color_alpha);
 	nh.getParam("frame_id", parameter.visualization.marker.frame_id);
