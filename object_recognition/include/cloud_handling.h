@@ -23,12 +23,8 @@ class cloud_handling
 {
 public:
 	cloud_handling (ros::NodeHandle nh, parameter_bag parameter);
-	void Match ();
 	void Callback (const sensor_msgs::PointCloud2ConstPtr& a_cloud_msg);
 	void features_of_objects ();
-	void visualize_marker (pcl::PointCloud<pcl::PointXYZ>::Ptr a_cloud_cluster,
-						   visualization_msgs::Marker::Ptr a_marker,
-						   int a_marker_id, float color_r, float color_g, float color_b);
 	std::vector<std::vector<pcl::PointCloud<pcl::Histogram<153> > > > object_database_spin_images;
 
 private:
