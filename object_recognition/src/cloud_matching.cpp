@@ -80,5 +80,3 @@ float cloud_matching::correlation_cloud (pcl::PointCloud<pcl::Histogram<153> > &
 
 	return R_tot;
 }
-
-

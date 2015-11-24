@@ -11,13 +11,16 @@ cloud_handling::cloud_handling (ros::NodeHandle nodehandle, parameter_bag params
 {
 	nh = nodehandle;
 	parameter = params_bag;
-	ros::Publisher pub, vis_pub;
 	std::vector<std::vector<pcl::PointCloud<pcl::Histogram<153> > > > object_database_spin_images;
 
 	// Create a ROS publisher for the output point cloud
-	pub = nh.advertise<pcl::PointCloud<pcl::PointXYZ> > (parameter.pub_topic_pointcloud, 1);
+	pub = nh.advertise<pcl::PointCloud<pcl::PointXYZ> > (parameter.pub_topic_pointcloud,
+														 parameter.queue_size_pub_pointcloud,
+														 true);
 	// Create a ROS publisher for the marker visualization
-	vis_pub = nh.advertise<visualization_msgs::Marker>(parameter.pub_topic_marker, 1);
+	vis_pub = nh.advertise<visualization_msgs::Marker>(parameter.pub_topic_marker,
+													   parameter.queue_size_pub_marker,
+													   true);
 }
 
 void cloud_handling::Match ()
@@ -105,9 +108,12 @@ void cloud_handling::Callback (const sensor_msgs::PointCloud2ConstPtr& cloud_msg
 
 	// Construct the class cloud_segmentation with its parameters
 	cloud_segmentation c_segmentation (parameter.segmentation);
-	// Apply euclidean cluster extraction and return vector of cloud cluster
+	// Apply euclidean cluster extraction (segmentation) and return vector of cloud cluster
 	std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>* cloud_cluster (new std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>);
 	c_segmentation.euclidean_cluster_extraction(cloud_filtered_outlier, cloud_cluster);
+
+	// Publish the data
+	pub.publish (cloud_filtered_outlier);
 
 	// Construct the class cloud_matching with its parameters
 	cloud_matching c_matching (parameter.recognition);
@@ -139,22 +145,26 @@ void cloud_handling::Callback (const sensor_msgs::PointCloud2ConstPtr& cloud_msg
 						<< R_object[j]
 						<< "\n";
 		  }
+
 		  // Print R values for objects
 		  float biggest_R =-std::numeric_limits<float>::infinity();
 		  for (std::vector<float>::const_iterator l = R_object.begin(); l != R_object.end(); ++l)
 		  {
 			  if (*l > biggest_R)
 			  {
-				  biggest_R = *l;
-			  }
-			  std::cout << *l << " ";
+			      biggest_R = *l;
+		      }
+		  	  std::cout << *l << " ";
 		  }
 		  std:: cout << " biggest_R: " << biggest_R << std::endl;
 
+
 		  // Create a marker for each cluster
 		  visualization_msgs::Marker::Ptr marker (new visualization_msgs::Marker);
+		  // Delete the old markers
+		  marker->action=3;
 		  // Give different colours to the markers depending on which object is recognised
-		  if (biggest_R < 0.93)
+		  if (biggest_R < 0.94)
 		  {
 			  visualize_marker((*cloud_cluster)[i], marker, i, 1.0, 0.0, 0.0);
 		  }
@@ -169,9 +179,6 @@ void cloud_handling::Callback (const sensor_msgs::PointCloud2ConstPtr& cloud_msg
 
 		  // Publish the marker
 		  vis_pub.publish(marker);
-
-		  // Publish the data
-		  pub.publish (cloud_filtered_outlier);
 	}
 }
 

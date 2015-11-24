@@ -20,7 +20,7 @@ void cloud_filter::resolution_filter (pcl::PointCloud<pcl::PointXYZ>::Ptr a_clou
   // Create the filtering object
   pcl::VoxelGrid<pcl::PointXYZ> sor;
   sor.setInputCloud (a_cloud);
-  sor.setLeafSize (0.01, 0.01, 0.01);
+  sor.setLeafSize (0.005, 0.005, 0.005);
   sor.filter (*a_cloud_filtered);
 
   std::cerr << "PointCloud after res_filtering: " << a_cloud_filtered->width * a_cloud_filtered->height

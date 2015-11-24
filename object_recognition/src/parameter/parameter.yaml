@@ -1,6 +1,11 @@
 node_name: object_recognition_node                        # name of the node
 subscribed_rostopic: /camera/depth_registered/points      # subscribed rostopic
 queue_size_subscriber: 1                                  # queue size of the subscriber
+
 pub_topic_pointcloud: output                              # published topic for the pointcloud
+queue_size_pub_pointcloud: 1                              # queue size of the pointcloud publisher
+
 pub_topic_marker: visualization_marker                    # published topic for the marker
+queue_size_pub_marker: 1                                  # queue size of the marker publisher
+
 cloud_frame_id: camera_link                               # frame_id of the pointcloud for displaying in rviz
