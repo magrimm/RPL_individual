@@ -2,7 +2,7 @@
 
   <node name="object_recognition_node" pkg="object_recognition" type="object_recognition" clear_params="true" output="screen" />
  
-  <node name="rviz_node" pkg="rviz" type="rviz" />
+  <!--node name="rviz_node" pkg="rviz" type="rviz" /-->
  
   <rosparam command="load" file="$(find object_recognition)/src/parameter/parameter.yaml" />
   <rosparam command="load" file="$(find object_recognition)/src/parameter/filter/resolution.yaml" />
@@ -12,6 +12,6 @@
   <rosparam command="load" file="$(find object_recognition)/src/parameter/visualization/marker.yaml" />
   <rosparam command="load" file="$(find object_recognition)/src/parameter/recognition/cloud_correlation.yaml" />
   
-  <param name="object_files_path" type="str" value="$(find object_recognition)/object_files.txt" />
+  <param name="object_files_path" type="str" value="$(find object_recognition)/object_files.txt" />    
   
 </launch>

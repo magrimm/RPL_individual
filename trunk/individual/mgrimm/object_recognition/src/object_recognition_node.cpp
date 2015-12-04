@@ -53,12 +53,12 @@ int main (int argc, char** argv)
 	nh.getParam("color_r_duck", parameter.visualization.marker.color_r_duck);
 	nh.getParam("color_g_duck", parameter.visualization.marker.color_r_duck);
 	nh.getParam("color_b_duck", parameter.visualization.marker.color_r_duck);
-	nh.getParam("color_r_duck", parameter.visualization.marker.color_r_human);
-	nh.getParam("color_g_duck", parameter.visualization.marker.color_r_human);
-	nh.getParam("color_b_duck", parameter.visualization.marker.color_r_human);
-	nh.getParam("color_r_duck", parameter.visualization.marker.color_r_unknown);
-	nh.getParam("color_g_duck", parameter.visualization.marker.color_r_unknown);
-	nh.getParam("color_b_duck", parameter.visualization.marker.color_r_unknown);
+	nh.getParam("color_r_human", parameter.visualization.marker.color_r_human);
+	nh.getParam("color_g_human", parameter.visualization.marker.color_r_human);
+	nh.getParam("color_b_human", parameter.visualization.marker.color_r_human);
+	nh.getParam("color_r_unkown", parameter.visualization.marker.color_r_unknown);
+	nh.getParam("color_g_unkown", parameter.visualization.marker.color_r_unknown);
+	nh.getParam("color_b_unkown", parameter.visualization.marker.color_r_unknown);
 
 	// Construct class cloud_processor with ros::NodeHandle and parameter structure
 	cloud_handling c_handling (nh, parameter);

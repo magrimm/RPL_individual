@@ -42,32 +42,36 @@ void cloud_handling::features_of_objects ()
 	for (std::string line_object_files; std::getline(inFile_object_files, line_object_files);)
 	{
 		std::cout << "\nLine_object_files: "
-				  << boost::filesystem::current_path().string()+line_object_files
+				  << line_object_files//boost::filesystem::current_path().string()+line_object_files
 				  << std::endl;
 
-		line_object_files = boost::filesystem::current_path().string()+line_object_files;
+//		line_object_files = boost::filesystem::current_path().string()+line_object_files;
 		std::ifstream inFile_line_object_files (line_object_files.c_str());
 		for (std::string line_object_pcdfiles; std::getline(inFile_line_object_files, line_object_pcdfiles);)
 		{
 			std::cout << "Line_object_pcdfiles: "
-					  << boost::filesystem::current_path().string()+line_object_pcdfiles
+					  << line_object_pcdfiles //boost::filesystem::current_path().string()+line_object_pcdfiles
 					  << std::endl;
 
 			// Convert the .pcd file to pointcloud data and print Error if file not readable
-			if (pcl::io::loadPCDFile<pcl::PointXYZ> (boost::filesystem::current_path().string()+line_object_pcdfiles, *cloud) == -1)
+			if (pcl::io::loadPCDFile<pcl::PointXYZ> (line_object_pcdfiles, *cloud) == -1)//(boost::filesystem::current_path().string()+line_object_pcdfiles, *cloud) == -1)
 			{
 		    std::cout << "Couldn't read file "
-		    		  << boost::filesystem::current_path().string()+line_object_pcdfiles
+		    		  << line_object_pcdfiles//boost::filesystem::current_path().string()+line_object_pcdfiles
 					  << "\n";
 			}
+			// Downsample .pcd pointlcouds
+//			cloud_filter c_filter(parameter.filter);
+//			c_filter.resolution_filter(cloud, cloud_sampled);
+
 			// Construct the class cloud_matching with its parameters.
 			cloud_matching c_matching (parameter.recognition);
 
 			// Convert Pointcloud to spin_image
-			c_matching.spin_image(cloud, spin_images);
+			c_matching.spin_image(cloud, spin_images);//(cloud_sampled, spin_images);
 
 			// Push back Pointclouds/spin_images in vector a_vector/a_vector_spin_images
-			a_vector.push_back (*cloud);
+			a_vector.push_back (*cloud);//(*cloud_sampled);
 			a_vector_spin_images.push_back (*spin_images);
 		}
 
