@@ -15,8 +15,13 @@
 class math_util
 {
 public:
+	// Contstructor
 	math_util ();
+
+	// Get random number from uniform sampling in the area [-a_b_max a_b_max]
 	float random_uniform_sampling (float a_b_max);
+
+	// Get random number from uniform sampling in the area [0 a_b_max]
 	float random_uniform_sampling_positive (float a_b_max);
 };
 

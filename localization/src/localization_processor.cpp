@@ -106,7 +106,7 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 		}
 
 		// Construct motion_update
-		motion_update motion_upd(parameter.motion_update);
+		motion_update motion_upd(parameter.motion_update, parameter.distribution);
 
 		//Construct sensor_update class
 		sensor_update sensor_upd(parameter.sensor_update);

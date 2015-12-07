@@ -7,9 +7,10 @@
 
 #include <motion_update.h>
 
-motion_update::motion_update(motion_update_bag motion_update_parameter)
+motion_update::motion_update(motion_update_bag motion_update_parameter, distribution_bag dist_parameter)
 {
 	motion_update_params = motion_update_parameter;
+	dist_params = dist_parameter;
 }
 
 void motion_update::particle_motion(robot_control control, pose& particle)
@@ -41,7 +42,7 @@ void motion_update::particle_motion(robot_control control, pose& particle)
 	float delta_rot2 = float (yaw1 - yaw0 - delta_rot1);
 
 	// Construct random distributions class
-	normal_distribution_approximation norm_dist_approx;
+	normal_distribution_approximation norm_dist_approx(dist_params);
 
 	// Perturb the motion parameters by noise in robot motion
 	float rot1_sq = (motion_update_params.alpha1 * powf(delta_rot1, 2)) +

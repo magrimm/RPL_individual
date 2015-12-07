@@ -11,6 +11,7 @@
 #include <tf/transform_datatypes.h>
 #include <distribution/distribution.h>
 #include <parameter/motion_update_bag.h>
+#include <parameter/distribution_bag.h>
 #include <localization_processor.h>
 
 // Forward declaration
@@ -21,13 +22,14 @@ class motion_update
 {
 public:
 	// Constructor with bag_specific parameters
-	motion_update(motion_update_bag motion_update_params);
+	motion_update(motion_update_bag motion_update_params, distribution_bag dist_params);
 
 	// Update the particle odometry
 	void particle_motion(robot_control a_control, pose& a_particle);
 
 private:
 	motion_update_bag motion_update_params;
+	distribution_bag dist_params;
 };
 
 

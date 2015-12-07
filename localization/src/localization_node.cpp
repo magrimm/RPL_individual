@@ -58,6 +58,9 @@ int main (int argc, char** argv)
 	// Parameters for distributions
 	nh.getParam("max_value_norm_dist_sq", parameter.distribution.max_value_norm_dist_sq);
 	nh.getParam("max_value_tri_dist_sq", parameter.distribution.max_value_tri_dist_sq);
+	nh.getParam("norm_dist_approx_multiplicator", parameter.distribution.norm_dist_approx_multiplicator);
+	nh.getParam("ang_dist_approx_multiplicator", parameter.distribution.ang_dist_approx_multiplicator);
+	nh.getParam("num_random_samples", parameter.distribution.num_random_samples);
 	// Parameters for motion update
 	nh.getParam("alpha1", parameter.motion_update.alpha1);
 	nh.getParam("alpha2", parameter.motion_update.alpha2);
