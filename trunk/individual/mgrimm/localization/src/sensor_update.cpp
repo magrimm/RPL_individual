@@ -23,7 +23,9 @@ float sensor_update::get_particle_weight(const sensor_msgs::LaserScanConstPtr& s
 
 	int correlation = correlation_particle_map(points);
 
-	particle_weight = correlation;///map_data.size();
+	particle_weight = float(correlation);
+
+//	clean_weight_of_particle(particle_weight, particle);
 
 	return particle_weight;
 }
@@ -37,9 +39,26 @@ void sensor_update::convert_sensor_measurement_to_points (const sensor_msgs::Las
 
 		if (range > scan_msg->range_min && range < scan_msg->range_max)
 		{
-			position3D pos;
-			pos.x = particle.position.x + range * cosf(angle);
-			pos.y = particle.position.y + range * sinf(angle);
+			position3D point_laser, translation, rotation, pos;
+
+			tf::Quaternion q(particle.orientation.x,
+		             	 	 particle.orientation.y,
+							 particle.orientation.z,
+							 particle.orientation.w);
+
+			point_laser.x = range * cosf(angle);
+			point_laser.y = range * sinf(angle);
+			point_laser.z = 0.0;
+
+			rotation.x = point_laser.x * cosf(angle) - point_laser.y * sinf(angle);
+			rotation.y = point_laser.x * sinf(angle) + point_laser.y * cosf(angle);
+
+			translation.x = particle.position.x;
+			translation.y = particle.position.y;
+			translation.z = 0.0;
+
+			pos.x = rotation.x + translation.x;
+			pos.y = rotation.y + translation.y;
 			pos.z = 0.0;
 
 			points.push_back(pos);
@@ -68,4 +87,24 @@ int sensor_update::correlation_particle_map (std::vector<position3D>& points)
 	std::cout << "correlation: " << correlation << std::endl;
 
 	return correlation;
+}
+
+void sensor_update::clean_weight_of_particle(float& particle_weight, pose& particle)
+{
+//	int map_index = int(particle.position.x/0.01) + int(particle.position.y*200/0.01);
+
+	if (particle.position.x > 2.0 || particle.position.x < 0.0 || particle.position.y > 2.0 || particle.position.y < 0.0);// || (map_index > 40000) || (map_data.at(map_index)==0))
+	{
+		// Assign low correlation/ particle weight
+		particle_weight = 0.0001;
+	}
+}
+
+void sensor_update::clean_particle_position (pose& particle)
+{
+	if ((particle.position.x > 2.0 || particle.position.x < 0.0) || (particle.position.y > 2.0 || particle.position.y < 0.0))
+	{
+		// Assign low correlation/ particle weight
+
+	}
 }
