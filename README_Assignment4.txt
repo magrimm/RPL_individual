@@ -8,18 +8,20 @@ particles are displayed as pose array and converge towards the real robots posit
 II. Usage
 -------------------------------
 
-First connect to your camera (in our case a primesense camera) via USB and run the command
+Since we use simulated date from a rosbag we first need to play the bag. For that move to
+the folder with the bag and execute
 
-	$ roslaunch openni_launch openni.launch
+	$ rosbag play localization.bag
 
-This command also starts ROS, if it is not running yet. Afterwards open the application in 
-your preferred IDE and launch the command
+Furthermore, we need to execute the .launch file of the project. Within this launchfile 
+the different nodes to be started are specified and also the paths to the parameter 
+.yaml files. For that move to your workspace and execute
 
-	$ roslaunch object_recognition object_recognition.launch 
+	$ roslaunch localization localization.launch
 
-"Object recognition" represents the package_name and "object_recognition.launch" the launch
-file. The .lauch file specifies the nodes which are going to be started and the parameter 
-paths are defined there. 
+Now the application should be started and rviz should open.
+"localization" represents the package_name and "localization.launch" the launch
+file.
  
 
 III. File/directory structure
@@ -75,33 +77,31 @@ IV. How it works?
 The parameter structure allows the user to parse around the specific sets of parameters.
 With the help of rosparam the parameters can be easily saved in a .yaml file.
 The parameter implementation/parsing is done with the help of the header file structure in 
-/<your-nethz-name>/object_recognition/include/parameter/ directory. The parameter_bag.h file 
-represents the hightest level of parameter and contains structs with lower level of parameter
-as for example filter_bag. Within this eg filter_bag is again struct subset which contain
-the parameter of the specific eg filter. This parameter can be accessed in filter/<<>>.h .
+/<your-nethz-name>/localization/include/parameter/ directory. The parameter_bag.h file 
+represents the hightest level of parameter and may contain structs with lower level of parameter. 
 
 2)
 The code itself is structured in a clear pattern. The main() initialises ros and the parameters.
-Furthermore, the subscription to the camera topic is done in which the callback function is 
-called over and over again.
-The callback function is implemented in the class cloud_handling. A database of spin images of the 
-.pcd files for the objects is created. In the callback itself all filters (class cloud_filter)
-are going to be appliedto the original pointcloud received by the camera. After resolution, 
-passthrough and outlier filtering the segmentation takes place. The remaining poincloud has to 
-be divided into different clusters if more than one object is to be seen. For this a euclidean 
-cluster extraction (class cloud_segmentation) is applied. Each cluster of the scene is going
-to be compared now with the database of the objects. For that spin images are also being created
-for the scene. After all we receive a correspondance value between (-1,1) which represents the 
-quality of fit. The objects can be compared now directly to the scene and the highest value
-above a certain threshold should represent now in theory the object. 
-Finally, a visualization maker (class cloud_visualization) is displayed in a certain colour to
-indicate the recognised object.
+Furthermore, the subscription to the map, odometry and laser scan topic is done in which the 
+callback functions are called over and over again.
+The callback functions are implemented in the class localization_processor. 
+The map callback receives the map message and saves it as an object for later use of the data.
+Particles are created distributed over the map with different orientations.
+The second callback, the odometry, updates the control vector of the odometry. The odometry of
+the last period t-1 and the current period t are saved.
+Handling and communicating through signalers the callback odometry and the callback scan are 
+always executed sequentially. In the callback scan first the motion update is calculated due to 
+the difference in odometry from and noise. Afterwards the sensor update calculates for each 
+particle a correlation value. This value represents how good the sight of the particle and 
+the global position in the map are correlated. 
+According to this weights the particles are going to be resampled in the next step. The 
+resampling biases a convergence of the particles towards the particles with high weights.
+At the end the particles are visualized in RVIZ using geometry_msgs::PoseArray.
 
 
 V. Limitations
 -------------------------------
 
-A good finetuning of the tuning knobs is require to get a reasonable result. Also certain 
-thresholds for eg an unknown object are limiting the precision of the process. 
-Furthermore, is it important to have good .pcd files of the object to build a reliable 
-database of the objects.
+A good finetuning of the tuning knobs is required to get a reasonable result. For the sensor
+update only the parameters alpha 1-4 need to be chosen properly which are also robot-specific.
+Those parameters highly influence the convergence behaviour of the particles.
