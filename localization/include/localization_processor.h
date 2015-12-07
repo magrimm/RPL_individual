@@ -12,9 +12,11 @@
 #include <parameter/distribution_bag.h>
 #include <parameter/resample_bag.h>
 #include <parameter/motion_update_bag.h>
+#include <parameter/sensor_update_bag.h>
 #include <parameter/visualization_bag.h>
 #include <ros/ros.h>
 #include <motion_update.h>
+#include <sensor_update.h>
 #include <resample.h>
 #include <visualization.h>
 #include <nav_msgs/Odometry.h>
@@ -22,6 +24,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <math.h>
+#include <numeric>
 
 struct position3D
 {
@@ -61,6 +64,7 @@ private:
 	std::vector<int> map_data;
 	ros::Publisher pub;
 	std::vector<pose> particles;
+	std::vector<float> weights;
 
 	robot_control control;
 	pose pose_empty;
@@ -68,6 +72,8 @@ private:
 
 	std::vector<pose> ini_pose;
 	std::vector<pose> cur_pose;
+
+	bool sig_odom, sig_scan;
 };
 
 #endif /* _LOCALIZATION_PROCESSOR_H_ */

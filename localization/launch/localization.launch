@@ -11,6 +11,7 @@
   <rosparam command="load" file="$(find localization)/parameter/distribution_bag.yaml" />
   <rosparam command="load" file="$(find localization)/parameter/resample_bag.yaml" />
   <rosparam command="load" file="$(find localization)/parameter/motion_update_bag.yaml" />
+  <rosparam command="load" file="$(find localization)/parameter/sensor_update_bag.yaml" />
   <rosparam command="load" file="$(find localization)/parameter/visualization_bag.yaml" />
   
   <!--param name="object_files_path" type="str" value="$(find object_recognition)/object_files.txt" /-->    
