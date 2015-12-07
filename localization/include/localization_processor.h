@@ -26,6 +26,12 @@
 #include <math.h>
 #include <numeric>
 
+struct map_grid
+{
+	std::vector<int> data;
+	float width, height, resolution;
+};
+
 struct position3D
 {
 	float x, y, z;
@@ -51,18 +57,27 @@ struct robot_control
 class localization_processor
 {
 public:
+	// Constructor with nodehandle and parameters
 	localization_processor (ros::NodeHandle nh, parameter_bag parameter);
+
+	// Callback of map/OccupancyGrid
 	void Callback_map (const nav_msgs::OccupancyGrid::ConstPtr& a_map_msg);
+
+	// Callback of odometry
 	void Callback_odom (const nav_msgs::OdometryConstPtr& a_odom_msg);
+
+	// Callback of laser scan
 	void Callback_scan (const sensor_msgs::LaserScanConstPtr& a_scan_msg);
+
+	// Create particles in map
 	void get_particles ();
 
 private:
 	ros::NodeHandle nh;
 	parameter_bag parameter;
-	nav_msgs::OccupancyGrid::ConstPtr map;
-	std::vector<int> map_data;
+
 	ros::Publisher pub;
+	map_grid map;
 	std::vector<pose> particles;
 	std::vector<float> weights;
 
@@ -70,6 +85,7 @@ private:
 	pose pose_empty;
 	std::vector<robot_control> control_vec;
 
+	// Signaler for communication bettween odom msg and laser scan msg
 	bool sig_odom, sig_scan;
 };
 

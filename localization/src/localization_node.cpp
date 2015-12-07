@@ -26,6 +26,34 @@ int main (int argc, char** argv)
 	nh.getParam("queue_size_subscriber_scan", parameter.queue_size_subscriber_scan);
 	nh.getParam("pub_topic_particles", parameter.pub_topic_particles);
 	nh.getParam("queue_size_pub_particles", parameter.queue_size_pub_particles);
+	// Parameter for producing the particles
+	nh.getParam("it_cell_x", parameter.it_cell_x);
+	nh.getParam("it_cell_y", parameter.it_cell_y);
+	nh.getParam("it_theta", parameter.it_theta);
+	// Initialization parameters
+	nh.getParam("pose_empty_pos_x", parameter.pose_empty_pos_x);
+	nh.getParam("pose_empty_pos_y", parameter.pose_empty_pos_y);
+	nh.getParam("pose_empty_pos_z", parameter.pose_empty_pos_z);
+	nh.getParam("pose_empty_orient_x", parameter.pose_empty_orient_x);
+	nh.getParam("pose_empty_orient_y", parameter.pose_empty_orient_y);
+	nh.getParam("pose_empty_orient_z", parameter.pose_empty_orient_z);
+	nh.getParam("pose_empty_orient_w", parameter.pose_empty_orient_w);
+
+	nh.getParam("control_odom_prev_pos_x", parameter.control_odom_prev_pos_x);
+	nh.getParam("control_odom_prev_pos_y", parameter.control_odom_prev_pos_y);
+	nh.getParam("control_odom_prev_pos_z", parameter.control_odom_prev_pos_z);
+	nh.getParam("control_odom_prev_orient_x", parameter.control_odom_prev_orient_x);
+	nh.getParam("control_odom_prev_orient_y", parameter.control_odom_prev_orient_y);
+	nh.getParam("control_odom_prev_orient_z", parameter.control_odom_prev_orient_z);
+	nh.getParam("control_odom_prev_orient_w", parameter.control_odom_prev_orient_w);
+
+	nh.getParam("control_odom_cur_pos_x", parameter.control_odom_cur_pos_x);
+	nh.getParam("control_odom_cur_pos_y", parameter.control_odom_cur_pos_y);
+	nh.getParam("control_odom_cur_pos_z", parameter.control_odom_cur_pos_z);
+	nh.getParam("control_odom_cur_orient_x", parameter.control_odom_cur_orient_x);
+	nh.getParam("control_odom_cur_orient_y", parameter.control_odom_cur_orient_y);
+	nh.getParam("control_odom_cur_orient_z", parameter.control_odom_cur_orient_z);
+	nh.getParam("control_odom_cur_orient_w", parameter.control_odom_cur_orient_w);
 
 	// Parameters for distributions
 	nh.getParam("max_value_norm_dist_sq", parameter.distribution.max_value_norm_dist_sq);
@@ -35,6 +63,9 @@ int main (int argc, char** argv)
 	nh.getParam("alpha2", parameter.motion_update.alpha2);
 	nh.getParam("alpha3", parameter.motion_update.alpha3);
 	nh.getParam("alpha4", parameter.motion_update.alpha4);
+	// Parameters for sensor update
+	nh.getParam("map_obstacle", parameter.sensor_update.map_obstacle);
+	nh.getParam("clean_particle_weight", parameter.sensor_update.clean_particle_weight);
 	// Parameters for visualization
 	nh.getParam("frame_id", parameter.visualization.frame_id);
 	nh.getParam("ns", parameter.visualization.ns);

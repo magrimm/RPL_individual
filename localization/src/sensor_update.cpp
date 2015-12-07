@@ -7,13 +7,12 @@
 
 #include <sensor_update.h>
 
-sensor_update::sensor_update (sensor_update_bag sensor_update_parameter, std::vector<int> the_map_data)
+sensor_update::sensor_update (sensor_update_bag sensor_update_parameter)
 {
 	sensor_update_param = sensor_update_parameter;
-	map_data = the_map_data;
 }
 
-float sensor_update::get_particle_weight(const sensor_msgs::LaserScanConstPtr& scan_msg, pose& particle)
+float sensor_update::get_particle_weight(const sensor_msgs::LaserScanConstPtr& scan_msg, pose& particle, map_grid& map)
 {
 	std::vector<position3D> points;
 
@@ -21,11 +20,12 @@ float sensor_update::get_particle_weight(const sensor_msgs::LaserScanConstPtr& s
 	convert_sensor_measurement_to_points(scan_msg, particle, points);
 
 	// Get correlation value of particle and map
-	int correlation = correlation_particle_map(points);
+	int correlation = correlation_particle_map(points, map);
 
 	float particle_weight = float(correlation);
 
-	clean_weight_of_particle(particle_weight, particle);
+	// Clean the particle weights such that particles are highly unlikely to be outside of the map
+	clean_weight_of_particle(particle_weight, particle, map);
 
 	return particle_weight;
 }
@@ -34,17 +34,19 @@ void sensor_update::convert_sensor_measurement_to_points (const sensor_msgs::Las
 {
 	for (int i = 0; i < scan_msg->ranges.size(); ++i)
 	{
+		// Range and angle of laser scan point in local camera frame
 		float range = scan_msg->ranges.at(i);
 		float angle = scan_msg->angle_min + i*scan_msg->angle_increment;
 
+		// If range is within [range_min range_max] of the scan
 		if (range > scan_msg->range_min && range < scan_msg->range_max)
 		{
-			position3D point_laser, translation, rotation, pos;
+			position3D point_scan, translation, rotation, pos;
 
 			// Calculate polar rotation of the scan point
-			point_laser.x = range * cosf(angle);
-			point_laser.y = range * sinf(angle);
-			point_laser.z = 0.0;
+			point_scan.x = range * cosf(angle);
+			point_scan.y = range * sinf(angle);
+			point_scan.z = 0.0;
 
 			// Transform quaternion orientation of particle to theta (yaw)
 			tf::Quaternion q(particle.orientation.x,
@@ -57,8 +59,8 @@ void sensor_update::convert_sensor_measurement_to_points (const sensor_msgs::Las
 			m.getRPY(roll, pitch, yaw);
 
 			// Calculate rotational part
-			rotation.x = point_laser.x * cosf((float) yaw) - point_laser.y * sinf((float) yaw);
-			rotation.y = point_laser.x * sinf((float) yaw) + point_laser.y * cosf((float) yaw);
+			rotation.x = point_scan.x * cosf((float) yaw) - point_scan.y * sinf((float) yaw);
+			rotation.y = point_scan.x * sinf((float) yaw) + point_scan.y * cosf((float) yaw);
 
 			// Calculate translational part
 			translation.x = particle.position.x;
@@ -71,27 +73,22 @@ void sensor_update::convert_sensor_measurement_to_points (const sensor_msgs::Las
 			pos.z = 0.0;
 
 			points.push_back(pos);
-
-//			// DEBUG
-//			std::cout << "angle: " << angle << " | "
-//					  << "yaw: " << yaw
-//					  << std::endl;
 		}
 	}
 }
 
-int sensor_update::correlation_particle_map (std::vector<position3D>& points)
+int sensor_update::correlation_particle_map (std::vector<position3D>& points, map_grid& map)
 {
 	int correlation = 0;
 
 	for (int i = 0; i < points.size(); ++i)
 	{
-		int map_index = int(points.at(i).x/0.01) + int(points.at(i).y*200/0.01);
+		int map_index = int(points.at(i).x/map.resolution) + int(points.at(i).y*map.width/map.resolution);
 
 		// Count correlations if point is within the map
-		if (map_index < map_data.size())
+		if (map_index < map.data.size())
 		{
-			if (map_data.at(map_index) == 100)
+			if (map.data.at(map_index) == sensor_update_param.map_obstacle)
 			{
 				correlation += 1;
 			}
@@ -101,26 +98,13 @@ int sensor_update::correlation_particle_map (std::vector<position3D>& points)
 	return correlation;
 }
 
-void sensor_update::clean_weight_of_particle(float& particle_weight, pose& particle)
+void sensor_update::clean_weight_of_particle(float& particle_weight, pose& particle, map_grid& map)
 {
-	int map_index = int(particle.position.x/0.01) + int(particle.position.y*200/0.01);
-//	if (map_index > 40000)
-//	{
-//		map_index = 40000;
-//	}
+	int map_index = int(particle.position.x/map.resolution) + int(particle.position.y*map.width/map.resolution);
 
-	if (particle.position.x > 2.0 || particle.position.x < 0.0 || particle.position.y > 2.0 || particle.position.y < 0.0)// || map_index > 40000 || map_data.at(map_index)==0)
+	if (particle.position.x > map.width/map.resolution || particle.position.x < 0 || particle.position.y > map.height/map.resolution || particle.position.y < 0.0)
 	{
 		// Assign low correlation/ particle weight
-		particle_weight = 0.0001;
-	}
-}
-
-void sensor_update::clean_particle_position (pose& particle)
-{
-	if ((particle.position.x > 2.0 || particle.position.x < 0.0) || (particle.position.y > 2.0 || particle.position.y < 0.0))
-	{
-		// Assign low correlation/ particle weight
-
+		particle_weight = sensor_update_param.clean_particle_weight;
 	}
 }

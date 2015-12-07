@@ -20,7 +20,10 @@ struct pose;
 class motion_update
 {
 public:
+	// Constructor with bag_specific parameters
 	motion_update(motion_update_bag motion_update_params);
+
+	// Update the particle odometry
 	void particle_motion(robot_control a_control, pose& a_particle);
 
 private:

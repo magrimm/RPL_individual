@@ -140,8 +140,8 @@ add_executable(localization
 	src/distribution/triangular_distribution_approximation.cpp
 	src/motion_update.cpp
 	src/sensor_update.cpp
-	src/stochastic_uniform_sampling.cpp
-	src/roulette_sampling.cpp
+	src/sampling/stochastic_uniform_sampling.cpp
+	src/sampling/roulette_sampling.cpp
 	src/util/math_util.cpp
 	src/visualization.cpp
 )
