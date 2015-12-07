@@ -12,10 +12,10 @@ visualization::visualization (visualization_bag visualization_params)
 	visual_param = visualization_params;
 }
 
-
 void visualization::visualize_particle (std::vector<geometry_msgs::Pose> particles,
 											visualization_msgs::MarkerArray::Ptr a_marker_array, int a_marker_id,
-											float a_color_r, float a_color_g, float a_color_b)
+											float a_color_r, float a_color_g, float a_color_b,
+											float a_scale_x, float a_scale_y, float a_scale_z)
 {
 	for (int i = 0; i < particles.size(); ++i)
 	{
@@ -32,14 +32,14 @@ void visualization::visualize_particle (std::vector<geometry_msgs::Pose> particl
 		a_marker->pose.position = particles.at(i).position;
 		a_marker->pose.orientation = particles.at(i).orientation;
 		// Calculate dimensions of marker
-		a_marker->scale.x = 1.0;
-		a_marker->scale.y = 1.0;
-		a_marker->scale.z = 1.0;
+		a_marker->scale.x = a_scale_x;
+		a_marker->scale.y = a_scale_y;
+		a_marker->scale.z = a_scale_z;
 		// Set color and transparancy of marker
 		a_marker->color.a = visual_param.color_alpha;
-		a_marker->color.r = 1.0;//a_color_r;
-		a_marker->color.g = 0.0;//a_color_g;
-		a_marker->color.b = 0.0;//a_color_b;
+		a_marker->color.r = a_color_r;
+		a_marker->color.g = a_color_g;
+		a_marker->color.b = a_color_b;
 
 		a_marker_array->markers.push_back(*a_marker);
 	}
@@ -47,15 +47,19 @@ void visualization::visualize_particle (std::vector<geometry_msgs::Pose> particl
 
 void visualization::visualize_particle_pose (geometry_msgs::PoseArray::Ptr poseArray, std::vector<pose> particles)
 {
-	poseArray->poses.clear(); // Clear last block perception result
+	// Clear last block perception result
+	poseArray->poses.clear();
+
+	// Set the header
 	poseArray->header.stamp = ros::Time::now();
 	poseArray->header.frame_id = "odometry_link";
 
+	// Get Pose_array for particles
 	for (int i = 0; i < particles.size(); ++i)
 	{
 		geometry_msgs::Pose pose;
 
-		//adding pose to pose array
+		// Filling pose with position and orientation
 		pose.position.x = particles.at(i).position.x;
 		pose.position.y = particles.at(i).position.y;
 		pose.position.z = particles.at(i).position.z;
@@ -63,6 +67,8 @@ void visualization::visualize_particle_pose (geometry_msgs::PoseArray::Ptr poseA
 		pose.orientation.y = particles.at(i).orientation.y;
 		pose.orientation.z = particles.at(i).orientation.z;
 		pose.orientation.w = particles.at(i).orientation.w;
+
+		// Append pose to pose_array
 		poseArray->poses.push_back(pose);
 	}
 }

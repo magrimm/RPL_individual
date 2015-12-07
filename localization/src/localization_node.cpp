@@ -27,7 +27,6 @@ int main (int argc, char** argv)
 	nh.getParam("pub_topic_particles", parameter.pub_topic_particles);
 	nh.getParam("queue_size_pub_particles", parameter.queue_size_pub_particles);
 
-
 	// Parameters for distributions
 	nh.getParam("max_value_norm_dist_sq", parameter.distribution.max_value_norm_dist_sq);
 	nh.getParam("max_value_tri_dist_sq", parameter.distribution.max_value_tri_dist_sq);

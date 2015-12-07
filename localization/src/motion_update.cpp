@@ -14,11 +14,6 @@ motion_update::motion_update(motion_update_bag motion_update_parameter)
 
 void motion_update::particle_motion(robot_control control, pose& particle)
 {
-	std::cout << "control_vec[i]: " << control.odometry[1].position.x << " | "
-									<< control.odometry[1].position.y << " | "
-									<< control.odometry[1].position.z
-									<< std::endl;
-
 	// Get euler angles from quaternion for control
 	tf::Quaternion q0(control.odometry[0].orientation.x,
 					  control.odometry[0].orientation.y,
@@ -61,14 +56,6 @@ void motion_update::particle_motion(robot_control control, pose& particle)
 	float delta_trans_perturbed = delta_trans - sample_trans;
 	float delta_rot2_perturbed = delta_rot2 - sample_rot2;
 
-	std::cout << "d_rot1: " << delta_rot1 << " | "
-			  << "d_rot1_p: " << delta_rot1_perturbed << " | "
-			  << "d_trans: " << delta_trans << " | "
-			  << "d_trans_p: " << delta_trans_perturbed << " | "
-			  << "d_rot2: " << delta_rot2 << " | "
-			  << "d_rot2_p: " << delta_rot2_perturbed
-			  << std::endl;
-
 	// Get euler angles from quaternion for initial_pose
 	tf::Quaternion q_ini(particle.orientation.x,
 			particle.orientation.y,
@@ -77,11 +64,6 @@ void motion_update::particle_motion(robot_control control, pose& particle)
 	tf::Matrix3x3 m_ini(q_ini);
 	double roll_ini, pitch_ini, yaw_ini;
 	m_ini.getRPY(roll_ini, pitch_ini, yaw_ini);
-
-	std::cout << "initial_pose[i]: " << particle.position.x << " | "
-									<< particle.position.y << " | "
-									<< particle.position.z
-									<< std::endl;
 
 	// Update the output pose x_t using the sample motion parameters
 	float x = particle.position.x + delta_trans_perturbed * cosf(yaw_ini + delta_rot1_perturbed);
@@ -95,8 +77,6 @@ void motion_update::particle_motion(robot_control control, pose& particle)
 	particle.orientation.y = tf::createQuaternionFromYaw(theta).getY();
 	particle.orientation.z = tf::createQuaternionFromYaw(theta).getZ();
 	particle.orientation.w = tf::createQuaternionFromYaw(theta).getW();
-
-	std::cout << "-----------------------------------------------------------" << std::endl;
 }
 
 
