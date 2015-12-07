@@ -33,7 +33,7 @@ void roulette_sampling::resample_distribution(std::vector<pose>& particles, std:
 	{
 		// Get random number uniformly sampled from [0, b_max]
 		// In last element of accumulated_weights is the total sum of all weights
-		float num = math.random_uniform_sampling_positive(accumulated_weights.at(accumulated_weights.size()));
+		float num = math.random_uniform_sampling_positive(accumulated_weights.at(accumulated_weights.size() - 1));
 
 		for (int i = 0; i < particles.size(); ++i)
 		{
