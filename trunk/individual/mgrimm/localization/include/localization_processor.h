@@ -70,9 +70,6 @@ private:
 	pose pose_empty;
 	std::vector<robot_control> control_vec;
 
-	std::vector<pose> ini_pose;
-	std::vector<pose> cur_pose;
-
 	bool sig_odom, sig_scan;
 };
 

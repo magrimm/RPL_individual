@@ -36,6 +36,7 @@ void roulette_sampling::resample_distribution(std::vector<pose>& particles, std:
 
 		for (int i = 0; i < particles.size(); ++i)
 		{
+
 			if (num >= accumulated_weights.at(i))
 			{
 				continue;

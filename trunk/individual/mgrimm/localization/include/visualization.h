@@ -22,7 +22,8 @@ public:
 	visualization (visualization_bag visual_param);
 	void visualize_particle (std::vector<geometry_msgs::Pose> the_particles,
 							 visualization_msgs::MarkerArray::Ptr a_marker_array, int a_marker_id,
-							 float a_color_r, float a_color_g, float a_color_b);
+							 float a_color_r, float a_color_g, float a_color_b,
+							 float a_scale_x, float a_scale_y, float a_scale_z);
 	void visualize_particle_pose (geometry_msgs::PoseArray::Ptr a_poseArray, std::vector<pose> the_particles);
 
 private:
