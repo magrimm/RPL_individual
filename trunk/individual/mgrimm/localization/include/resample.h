@@ -8,25 +8,42 @@
 #ifndef _RESAMPLE_H_
 #define _RESAMPLE_H_
 
-#include <geometry_msgs/PoseStamped.h>
+#include <parameter/resample_bag.h>
+#include <localization_processor.h>
+#include <util/math_util.h>
+
+//Forward declaration
+struct pose;
 
 class resample
 {
 public:
-	virtual void resample_distribution() = 0;
+	virtual void resample_distribution(std::vector<pose>& the_particles, std::vector<float>& the_weights) = 0;
 
 private:
+	resample_bag resample_params;
 };
 
 class stochastic_uniform_sampling : public resample
 {
 public:
-	stochastic_uniform_sampling(std::vector<geometry_msgs::Pose>* particles);
-	void resample_distribution();
+	stochastic_uniform_sampling(resample_bag resample_params);
+	void resample_distribution(std::vector<pose>& the_particles, std::vector<float>& the_weights);
 	virtual ~stochastic_uniform_sampling() {};
 
 private:
-	std::vector<geometry_msgs::Pose>* particles;
+	resample_bag resample_params;
+};
+
+class roulette_sampling : public resample
+{
+public:
+	roulette_sampling(resample_bag resample_params);
+	void resample_distribution(std::vector<pose>& the_particles, std::vector<float>& the_weights);
+	virtual ~roulette_sampling() {};
+
+private:
+	resample_bag resample_params;
 };
 
 #endif /* _RESAMPLE_H_ */

@@ -16,10 +16,10 @@ float normal_distribution_approximation::sample_distribution(float b_sq, float m
 	// Construct math_util class
 	math_util math;
 
-	float num_sum;
+	float num_sum = 0;
 	for (int i = 0; i < 13; ++i)
 	{
-		num_sum += math.random_uniform_sampling(sqrt(b_sq));
+		num_sum += math.random_uniform_sampling(sqrtf(b_sq));
 	}
-	return (num_sum/2);
+	return (num_sum/2.0);
 }

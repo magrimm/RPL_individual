@@ -12,6 +12,7 @@
 #include <parameter/distribution_bag.h>
 #include <parameter/resample_bag.h>
 #include <parameter/motion_update_bag.h>
+#include <parameter/sensor_update_bag.h>
 #include <parameter/visualization_bag.h>
 
 struct parameter_bag
@@ -27,6 +28,7 @@ struct parameter_bag
 	distribution_bag distribution;
 	resample_bag resample;
 	motion_update_bag motion_update;
+	sensor_update_bag sensor_update;
 	visualization_bag visualization;
 };
 

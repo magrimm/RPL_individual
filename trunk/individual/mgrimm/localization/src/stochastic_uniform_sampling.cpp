@@ -7,12 +7,12 @@
 
 #include <resample.h>
 
-stochastic_uniform_sampling::stochastic_uniform_sampling (std::vector<geometry_msgs::Pose>* the_particles)
+stochastic_uniform_sampling::stochastic_uniform_sampling (resample_bag resample_parameter)
 {
-	particles = the_particles;
+	resample_params = resample_parameter;
 }
 
-void stochastic_uniform_sampling::resample_distribution()
+void stochastic_uniform_sampling::resample_distribution(std::vector<pose>& the_particles, std::vector<float>& the_weights)
 {
-
+	// ToDo
 }

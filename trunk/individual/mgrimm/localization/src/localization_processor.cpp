@@ -11,6 +11,8 @@ localization_processor::localization_processor (ros::NodeHandle nodehandle, para
 {
 	nh = nodehandle;
 	parameter = params_bag;
+	sig_odom = true;
+	sig_scan = true;
 
 	// Create a ROS publisher
 	pub = nh.advertise<geometry_msgs::PoseArray> (parameter.pub_topic_particles,
@@ -81,55 +83,102 @@ void localization_processor::Callback_map (const nav_msgs::OccupancyGrid::ConstP
 
 void localization_processor::Callback_odom (const nav_msgs::OdometryConstPtr& odom_msg)
 {
-	for (int i = 0; i < particles.size(); ++i)
+	while (sig_odom == true)
 	{
-		std::cout << "|  i  | " << i << std::endl;
+		for (int i = 0; i < particles.size(); ++i)
+		{
+			std::cout << "|  i  | " << i << std::endl;
 
-		std::cout << "particles[i]: " << particles.at(i).position.x << " | "
-									  << particles.at(i).position.y << " | "
-									  << particles.at(i).position.z
-									  << std::endl;
+			std::cout << "particles[i]: " << particles.at(i).position.x << " | "
+										  << particles.at(i).position.y << " | "
+										  << particles.at(i).position.z
+										  << std::endl;
 
-		// Control of previous and current odometry data
-		control_vec.at(i).odometry[0] = control_vec.at(i).odometry[1];
-		control_vec.at(i).odometry[1].position.x = odom_msg->pose.pose.position.x;
-		control_vec.at(i).odometry[1].position.y = odom_msg->pose.pose.position.y;
-		control_vec.at(i).odometry[1].position.z = odom_msg->pose.pose.position.z;
-		control_vec.at(i).odometry[1].orientation.x = odom_msg->pose.pose.orientation.x;
-		control_vec.at(i).odometry[1].orientation.y = odom_msg->pose.pose.orientation.y;
-		control_vec.at(i).odometry[1].orientation.z = odom_msg->pose.pose.orientation.z;
-		control_vec.at(i).odometry[1].orientation.w = odom_msg->pose.pose.orientation.w;
+			// Control of previous and current odometry data
+			control_vec.at(i).odometry[0] = control_vec.at(i).odometry[1];
+			control_vec.at(i).odometry[1].position.x = odom_msg->pose.pose.position.x;
+			control_vec.at(i).odometry[1].position.y = odom_msg->pose.pose.position.y;
+			control_vec.at(i).odometry[1].position.z = odom_msg->pose.pose.position.z;
+			control_vec.at(i).odometry[1].orientation.x = odom_msg->pose.pose.orientation.x;
+			control_vec.at(i).odometry[1].orientation.y = odom_msg->pose.pose.orientation.y;
+			control_vec.at(i).odometry[1].orientation.z = odom_msg->pose.pose.orientation.z;
+			control_vec.at(i).odometry[1].orientation.w = odom_msg->pose.pose.orientation.w;
 
-		// Construct motion_update
-		motion_update motion_upd(parameter.motion_update);
+			// Construct motion_update
+			motion_update motion_upd(parameter.motion_update);
 
-		// Update motion
-		motion_upd.particle_motion(control_vec.at(i), particles.at(i));
+			// Update motion
+			motion_upd.particle_motion(control_vec.at(i), particles.at(i));
+		}
+		// Construct visualization class
+		visualization vis(parameter.visualization);
+
+		// Create particle visualization
+		geometry_msgs::PoseArray::Ptr pose_array (new geometry_msgs::PoseArray);
+		vis.visualize_particle_pose(pose_array, particles);
+
+		// Publish the marker array of the particles
+		pub.publish(pose_array);
+
+		std::cout << "-----------------------------------------------------------------------" << std::endl;
+
+		// Set signaler such that callbacks of odom and scan wait for each other
+		sig_scan = true;
+		sig_odom = false;
 	}
-	// Construct visualization class
-	visualization vis(parameter.visualization);
-
-	// Create particle visualization
-	geometry_msgs::PoseArray::Ptr pose_array (new geometry_msgs::PoseArray);
-	vis.visualize_particle_pose(pose_array, particles);
-
-	// Publish the marker array of the particles
-	pub.publish(pose_array);
-
-	std::cout << "-----------------------------------------------------------------------" << std::endl;
 }
 
 void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr& scan_msg)
 {
-//	std::cout << "SCAN: " << scan_msg->angle_max << std::endl;
+	while (sig_scan == true)
+	{
+		// Clear the weights
+		weights.clear();
+
+		//Construct sensor_update class
+		sensor_update sensor_upd(parameter.sensor_update, map_data);
+
+		std::cout << "POS_1" << std::endl;
+
+		// Get weights of particles
+		for (int i = 0; i < particles.size(); ++i)
+		{
+			std::cout << "|  i  | " << i << std::endl;
+			std::cout << "particles.at(" << i << ").pos_x: " << particles.at(i).position.x << std::endl;
+			std::cout << "size_weights: " << weights.size() << std::endl;
+
+			weights.push_back(sensor_upd.get_particle_weight(scan_msg, particles.at(i)));
+		}
+
+		// Sum of weights
+		float sum_of_weights = std::accumulate(weights.begin(), weights.end(), 0.0);
+
+		std::cout << "sum_weights: " << sum_of_weights << std::endl;
+
+		// Normalize weights
+		std::transform(weights.begin(), weights.end(), weights.begin(), std::bind1st(std::multiplies<float>(), (1/sum_of_weights)));
+
+		// DEBUG
+		float after_sum_of_weights = std::accumulate(weights.begin(), weights.end(), 0.0);
+		std::cout << "sum_weights_after: " << after_sum_of_weights << std::endl;
+
+		// Construct resample
+		roulette_sampling roulette_samp(parameter.resample);
+
+		// Resample the particles
+		roulette_samp.resample_distribution(particles, weights);
+
+		// Set signaler such that callbacks of odom and scan wait for each other
+		sig_scan = false;
+		sig_odom = true; // true
+	}
 }
 
 void localization_processor::get_particles ()
 {
 	int count;
-	for (int i = 0; i < map_data.size(); i += 50)
+	for (int i = 0; i < map_data.size(); i += 20)
 	{
-//		geometry_msgs::Pose a_particle;
 		pose a_particle;
 		if (map_data.at(i) == 0)
 		{
@@ -137,6 +186,7 @@ void localization_processor::get_particles ()
 			float y = ((int)i/map->info.width)*map->info.resolution;
 			a_particle.position.x = x;
 			a_particle.position.y = y;
+			a_particle.position.z = 0	;
 
 			std::cout << "i: " << i
 					  << " x_pos: " << x

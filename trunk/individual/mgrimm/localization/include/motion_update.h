@@ -13,6 +13,7 @@
 #include <parameter/motion_update_bag.h>
 #include <localization_processor.h>
 
+// Forward declaration
 struct robot_control;
 struct pose;
 
