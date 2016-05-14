@@ -23,6 +23,7 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <sensor_msgs/LaserScan.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Polygon.h>
 #include <math.h>
 #include <numeric>
 
@@ -76,10 +77,11 @@ private:
 	ros::NodeHandle nh;
 	parameter_bag parameter;
 
-	ros::Publisher pub;
+	ros::Publisher pub, pub_points;
 	map_grid map;
 	std::vector<pose> particles;
 	std::vector<float> weights;
+	std::vector<float> norm_weights;
 
 	robot_control control;
 	pose pose_empty;

@@ -28,6 +28,11 @@ public:
 							 float a_color_r, float a_color_g, float a_color_b,
 							 float a_scale_x, float a_scale_y, float a_scale_z);
 
+	// Visualize the particle with a marker array
+	void visualize_points (visualization_msgs::Marker::Ptr a_marker_array, int a_marker_id,
+							 float a_color_r, float a_color_g, float a_color_b,
+							 float a_scale_x, float a_scale_y, float a_scale_z);
+
 	// Visualize the particle with a pose array
 	void visualize_particle_pose (geometry_msgs::PoseArray::Ptr a_poseArray, std::vector<pose> the_particles);
 
