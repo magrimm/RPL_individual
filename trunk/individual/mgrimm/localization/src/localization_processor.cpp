@@ -16,9 +16,11 @@ localization_processor::localization_processor (ros::NodeHandle nodehandle, para
 	sig_scan = false;
 
 	// Create a ROS publisher
-	pub = nh.advertise<geometry_msgs::PoseArray> (parameter.pub_topic_particles,
+	pub = nh.advertise<geometry_msgs::PoseArray> ("particles_tf",//parameter.pub_topic_particles,
 							  	  	  	  	  	  parameter.queue_size_pub_particles,
 												  true);
+	// Create a ROS publisher
+	pub_points = nh.advertise<visualization_msgs::Marker> ("points_particle", 1, true);
 
 	// Initialize robot control, initial and current pose
 	pose_empty.position.x = parameter.pose_empty_pos_x;
@@ -114,29 +116,39 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 		// Construct resample
 		roulette_sampling roulette_samp(parameter.resample);
 
+		// Construct visualization class
+		visualization vis(parameter.visualization);
+
 		// Clear the weights
 		weights.clear();
+		norm_weights.clear();
 
 		for (int i = 0; i < particles.size(); ++i)
 		{
 			// Update motion
 			motion_upd.particle_motion(control, particles.at(i));
 
-			// Get weights of particles
+			// Sensor update: Get weights of particles
 			weights.push_back(sensor_upd.get_particle_weight(scan_msg, particles.at(i), map));
 		}
+
+		// Get approximation of the robots position
+		pose robot_pose = motion_upd.approximate_robot_pose(particles);
 
 		// Sum of weights
 		float sum_of_weights = std::accumulate(weights.begin(), weights.end(), 0.0);
 
 		// Normalize weights
-		std::transform(weights.begin(), weights.end(), weights.begin(), std::bind1st(std::multiplies<float>(), (1/sum_of_weights)));
+		norm_weights.resize(weights.size());
+		std::transform(weights.begin(), weights.end(), norm_weights.begin(), std::bind1st(std::multiplies<float>(), (1/sum_of_weights)));
+
+//		std::cout << "sum: " << sum_of_weights << " | "
+//				  << "weights: " << weights.at(100) << " | "
+//				  << "norm_weights: " << norm_weights.at(100)
+//				  << std::endl;
 
 		// Resample the particles
-		roulette_samp.resample_distribution(particles, weights);
-
-		// Construct visualization class
-		visualization vis(parameter.visualization);
+		roulette_samp.resample_distribution(particles, norm_weights);
 
 		// Create particle visualization
 		geometry_msgs::PoseArray::Ptr pose_array (new geometry_msgs::PoseArray);
@@ -144,6 +156,42 @@ void localization_processor::Callback_scan (const sensor_msgs::LaserScanConstPtr
 
 		// Publish the marker array of the particles
 		pub.publish(pose_array);
+
+//		------------------------------------------------------------------------------------
+
+		// Create points seen by the particle with the highest weight
+		visualization_msgs::Marker::Ptr points_particle (new visualization_msgs::Marker);
+		std::vector<position3D> points;
+
+		int most_important_particle_index = std::distance(weights.begin(), std::max_element(weights.begin(), weights.end()));
+		pose most_important_particle = particles.at(most_important_particle_index);
+
+//		std::cout << "Index of max element: "
+//		       << most_important_particle_index << std::endl;
+//		std::cout << "weight: " << weights.at(most_important_particle_index)
+//		       << std::endl;
+
+		// Get points of most important particle
+		sensor_upd.convert_sensor_measurement_to_points(scan_msg, most_important_particle, points);
+
+		vis.visualize_points(points_particle, 0, 0.0, 1.0, 0.0, 0.01, 0.01, 0.01);
+
+		// Add points to geometry_msgs
+		for (int i = 0; i < points.size(); ++i)
+		{
+			geometry_msgs::Point p;
+
+			p.x = points.at(i).x;
+			p.y = points.at(i).y;
+			p.z = points.at(i).z;
+
+			points_particle->points.push_back(p);
+		}
+
+		// Publish the points seen by the particle with the highest weight
+		pub_points.publish(points_particle);
+
+//		----------------------------------------------------------------------------------------
 
 		// Set signaler such that callbacks of odom and scan wait for each other
 		sig_scan = false;
@@ -155,10 +203,10 @@ void localization_processor::get_particles ()
 {
 	int count;
 	// Put particles in x-coordinate in each it_cell_x cell
-	for (int i = 0; i < map.width; i += parameter.it_cell_x)
+	for (int i = 0; i < map.width; i += parameter.it_cell_x)//(int i = 130; i < 200; i += 10)//
 	{
 		// Put particles in y-coordinate in each it_cell_y cell
-		for (int j = 0; j < map.height; j += parameter.it_cell_y)
+		for (int j = 0; j < map.height; j += parameter.it_cell_y)//(int j = 0; j < 90; j += 10)//
 		{
 			// Distribute particles with different theta orientation
 			for (float theta = 0; theta < 2*M_PI; theta += 2*M_PI/parameter.it_theta)

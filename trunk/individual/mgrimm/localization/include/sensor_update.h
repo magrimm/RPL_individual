@@ -27,7 +27,7 @@ public:
 	// Get the weight of a particle due to the correlation of scan scene and map
 	float get_particle_weight (const sensor_msgs::LaserScanConstPtr& a_scan_msg, pose& a_particle, map_grid& a_map);
 
-	// Convert the sensor measurement to points in the global map
+	// Convert the sensor measurement to points in the global map (Get the laser scan points in the global frame of one particle)
 	void convert_sensor_measurement_to_points (const sensor_msgs::LaserScanConstPtr& a_scan_msg, pose& particle, std::vector<position3D>& a_points);
 
 	// Get the correlation of the particle and the map

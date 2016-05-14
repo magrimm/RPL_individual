@@ -43,7 +43,7 @@ void sensor_update::convert_sensor_measurement_to_points (const sensor_msgs::Las
 		{
 			position3D point_scan, translation, rotation, pos;
 
-			// Calculate polar rotation of the scan point
+			// Calculate polar rotation of the scan point in camera frame
 			point_scan.x = range * cosf(angle);
 			point_scan.y = range * sinf(angle);
 			point_scan.z = 0.0;
@@ -61,6 +61,7 @@ void sensor_update::convert_sensor_measurement_to_points (const sensor_msgs::Las
 			// Calculate rotational part
 			rotation.x = point_scan.x * cosf((float) yaw) - point_scan.y * sinf((float) yaw);
 			rotation.y = point_scan.x * sinf((float) yaw) + point_scan.y * cosf((float) yaw);
+			rotation.z = 0.0;
 
 			// Calculate translational part
 			translation.x = particle.position.x;
@@ -85,6 +86,8 @@ int sensor_update::correlation_particle_map (std::vector<position3D>& points, ma
 	{
 		int map_index = int(points.at(i).x/map.resolution) + int(points.at(i).y*map.width/map.resolution);
 
+//		std::cout << "map_index: " << map_index << std::endl;
+
 		// Count correlations if point is within the map
 		if (map_index < map.data.size())
 		{
@@ -102,7 +105,8 @@ void sensor_update::clean_weight_of_particle(float& particle_weight, pose& parti
 {
 	int map_index = int(particle.position.x/map.resolution) + int(particle.position.y*map.width/map.resolution);
 
-	if (particle.position.x > map.width/map.resolution || particle.position.x < 0 || particle.position.y > map.height/map.resolution || particle.position.y < 0.0)
+	if (particle.position.x > map.width*map.resolution || particle.position.x < 0.0 ||
+		particle.position.y > map.height*map.resolution || particle.position.y < 0.0)// || map.data.at(map_index) == sensor_update_param.map_obstacle)
 	{
 		// Assign low correlation/ particle weight
 		particle_weight = sensor_update_param.clean_particle_weight;

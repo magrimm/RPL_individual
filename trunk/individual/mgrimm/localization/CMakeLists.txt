@@ -15,7 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3") ##-std=c++0x -Ofast
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Ofast") ##-std=c++0x -O3
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -145,7 +145,7 @@ add_executable(localization
 	src/util/math_util.cpp
 	src/visualization.cpp
 )
-add_executable(tf_broadcaster 
+add_executable(tf_broadcaster_loc 
 	src/tf_broadcaster.cpp)
 
 ## Add cmake target dependencies of the executable
@@ -156,7 +156,7 @@ add_executable(tf_broadcaster
 target_link_libraries(localization 
 	${catkin_LIBRARIES}
 )
-target_link_libraries(tf_broadcaster 
+target_link_libraries(tf_broadcaster_loc 
 	${catkin_LIBRARIES}
 )
 

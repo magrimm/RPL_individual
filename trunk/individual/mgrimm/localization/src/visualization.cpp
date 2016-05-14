@@ -45,6 +45,30 @@ void visualization::visualize_particle (std::vector<geometry_msgs::Pose> particl
 	}
 }
 
+void visualization::visualize_points (visualization_msgs::Marker::Ptr a_marker, int a_marker_id,
+											float a_color_r, float a_color_g, float a_color_b,
+											float a_scale_x, float a_scale_y, float a_scale_z)
+{
+	// SET MARKER
+	a_marker->header.frame_id = visual_param.frame_id;
+	a_marker->header.stamp = ros::Time();
+	a_marker->ns = visual_param.ns;
+	a_marker->id = a_marker_id;
+	a_marker->type = visualization_msgs::Marker::POINTS;
+	a_marker->action = visualization_msgs::Marker::ADD;
+	// Orientation of marker
+	a_marker->pose.orientation.w = 1.0;
+	// Calculate dimensions of marker
+	a_marker->scale.x = a_scale_x;
+	a_marker->scale.y = a_scale_y;
+	a_marker->scale.z = a_scale_z;
+	// Set color and transparancy of marker
+	a_marker->color.a = visual_param.color_alpha;
+	a_marker->color.r = a_color_r;
+	a_marker->color.g = a_color_g;
+	a_marker->color.b = a_color_b;
+}
+
 void visualization::visualize_particle_pose (geometry_msgs::PoseArray::Ptr poseArray, std::vector<pose> particles)
 {
 	// Clear last block perception result

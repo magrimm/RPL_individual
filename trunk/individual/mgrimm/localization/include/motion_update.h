@@ -27,6 +27,9 @@ public:
 	// Update the particle odometry
 	void particle_motion(robot_control a_control, pose& a_particle);
 
+	// Get the approx. position of the robot
+	pose approximate_robot_pose(std::vector<pose>& the_particles);
+
 private:
 	motion_update_bag motion_update_params;
 	distribution_bag dist_params;

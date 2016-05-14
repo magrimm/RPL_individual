@@ -35,15 +35,15 @@ void roulette_sampling::resample_distribution(std::vector<pose>& particles, std:
 		// In last element of accumulated_weights is the total sum of all weights
 		float num = math.random_uniform_sampling_positive(accumulated_weights.at(accumulated_weights.size() - 1));
 
-		for (int i = 0; i < particles.size(); ++i)
+		for (int j = 0; j < particles.size(); ++j)
 		{
-			if (num >= accumulated_weights.at(i))
+			if (num >= accumulated_weights.at(j))
 			{
 				continue;
 			}
 			else
 			{
-				sampled_particles.push_back(particles.at(i));
+				sampled_particles.push_back(particles.at(j));
 				break;
 			}
 		}
